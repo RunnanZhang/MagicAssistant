@@ -19,10 +19,14 @@ SOURCES += main.cpp\
 
 HEADERS  += magicassistant.h \
     toolbar.h \
-    toolbutton.h
+    toolbutton.h \
+    defines.h
 
 FORMS    += magicassistant.ui \
     toolbar.ui
 
 RESOURCES += \
     resource.qrc
+
+macx: ICON = images/app.icns
+win32: RC_ICONS = images/james_16.ico
