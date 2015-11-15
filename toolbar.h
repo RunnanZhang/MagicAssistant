@@ -15,12 +15,13 @@ public:
     explicit ToolBar(QWidget *parent = 0);
     ~ToolBar();
 
-public slots:
-    ///< \note 申请隐藏，假如焦点不在窗体上.
-    void applyHide();
+    ///< \note 屏幕截图是否压缩.
+    inline void setCompressedEnable(bool is_compressed) {_is_compressed = is_compressed;}
 
-    ///< \note 设置焦点标志变量_is_display.
-    void setDisplayMark(bool is_display);
+signals:
+    ///< \note 为了不让本程序出现在截图中，截图时先隐藏所有窗体，之后在显示.
+    void hideRequested();
+    void showRequested();
 
 private slots:
     void on_toolButton_clicked();
@@ -36,14 +37,11 @@ private slots:
     ///< \note 定时关机.
     void on_pShutdownBtn_clicked();
 
-protected:
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
-
 private:
     Ui::ToolBar *ui;
 
-    bool _is_display;
+    ///< \note 屏幕截图是否压缩.
+    bool _is_compressed;
 };
 
 #endif // TOOLBAR_H

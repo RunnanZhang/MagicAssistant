@@ -22,17 +22,25 @@ public:
 protected:
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *);
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
+    void enterEvent(QEvent *event);
 
 private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
 
-    //设置开机自动启动.
+    ///< \note 设置开机自动启动.
     void autoStart(bool is_start);
+
+    ///< \note 用于定时器刷新状态，toolbar是否显示.
+    void updateState();
+
+    ///< \note 打开程序所在位置.
+    void openInExplorer();
+
+    ///< \note 屏幕截图设置.是否压缩图片.
+    void screenshotSetting(bool is_compressed);
 
 private:
     ///< \note 初始化托盘相关.
@@ -40,6 +48,18 @@ private:
 
     ///< \note 初始化位置.
     void initializeGeometry();
+
+    ///< \note 初始化菜单.
+    void initializeMenu();
+
+    ///< \note 显示toolbar.
+    void showToolBar();
+
+    ///< \note 隐藏所有窗体.
+    void hideAll();
+
+    ///< \note 显示所有窗体.
+    void showAll();
 
     ///< \note 设置透明度.
     void setOpacity(qreal opacity);
@@ -54,13 +74,22 @@ private:
     QPoint _start_pos;
 
     ///< \note 自定义工具栏.
-    ToolBar *_tool_bar;
+    ToolBar *_toolbar;
 
     ///< \note 系统托盘图标.
     QSystemTrayIcon *_system_tray;
 
     ///< \note 用于记录当前geometry，关闭时写入配置文件供下次启动加载.
     QRect _geometry;
+
+    ///< \note 鼠标进入窗体时打开的定时器，用于检测鼠标位置，移出有效范围内则停止，并隐藏toolbar.
+    QTimer *_timer;
+
+    ///< \note 主场体和toolbar联合起来的矩形.
+    QRect _unite_geometry;
+
+    ///< \note 右键菜单.
+    QMenu *_menu;
 };
 
 #endif // MAGICASSISTANT_H

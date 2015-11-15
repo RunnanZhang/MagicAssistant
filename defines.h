@@ -6,6 +6,7 @@
 #define SETTING_PATH "./Configure"
 #define OPACITY_KEY "/Configure/Opacity"
 #define GEOMETRY_KEY "/Configure/Geometry"
+#define SCREENSHOT_KEY "/Configure/IsCompressed"
 
 #endif // MAGIC_DEFINES
 

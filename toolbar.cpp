@@ -11,48 +11,30 @@
 
 ToolBar::ToolBar(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ToolBar),
-    _is_display(false)
+    ui(new Ui::ToolBar)
 {
     ui->setupUi(this);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
 
     //初始化ToolButton的Pixmap.
-    ui->toolButton->setPixmap(":/images/update.png");
-    ui->toolButton2->setPixmap(":/images/build.png");
-    ui->pOpenBtn->setPixmap(":/images/search.png");
-    ui->pCommandBtn->setPixmap(":/images/command.png");
-    ui->pScreenshotBtn->setPixmap(":/images/screenshot.png");
-    ui->pShutdownBtn->setPixmap(":/images/shutdown.png");
+    ui->toolButton->setPixmap(":/images/update_32.png", ":/images/update_64.png");
+    ui->toolButton->setToolTip("update");
+    ui->toolButton2->setPixmap(":/images/build_32.png", ":/images/build_64.png");
+    ui->toolButton2->setToolTip("build");
+    ui->pOpenBtn->setPixmap(":/images/search_32.png", ":/images/search_64.png");
+    ui->pOpenBtn->setToolTip("open");
+    ui->pCommandBtn->setPixmap(":/images/command_32.png", ":/images/command_64.png");
+    ui->pCommandBtn->setToolTip("command");
+    ui->pScreenshotBtn->setPixmap(":/images/screenshot_32.png", ":/images/screenshot_64.png");
+    ui->pScreenshotBtn->setToolTip("screenshot");
+    ui->pShutdownBtn->setPixmap(":/images/shutdown_32.png", ":/images/shutdown_64.png");
+    ui->pShutdownBtn->setToolTip("shutdown");
 }
 
 ToolBar::~ToolBar()
 {
     delete ui;
-}
-
-void ToolBar::enterEvent(QEvent *)
-{
-    _is_display = true;
-}
-
-void ToolBar::leaveEvent(QEvent *)
-{
-    _is_display = false;
-    QTimer::singleShot(1500, Qt::CoarseTimer, this, SLOT(applyHide()));
-}
-
-void ToolBar::applyHide()
-{
-    if(!_is_display) {
-        hide();
-    }
-}
-
-void ToolBar::setDisplayMark(bool is_display)
-{
-    _is_display = is_display;
 }
 
 void ToolBar::on_toolButton_clicked()
@@ -87,6 +69,9 @@ void ToolBar::on_pCommandBtn_clicked()
 
 void ToolBar::on_pScreenshotBtn_clicked()
 {
+    // 先隐藏所有窗体.
+    emit hideRequested();
+
     // QScreen没有构造函数，必须通过次获取.
     QScreen *screen = QGuiApplication::primaryScreen();
     QPixmap fullscreen = screen->grabWindow(QApplication::desktop()->winId());
@@ -106,7 +91,14 @@ void ToolBar::on_pScreenshotBtn_clicked()
     QString file_path = dir.absolutePath() + "/" + name + ".png";
 
     // 可以调第三个形参，为图片质量，100是无压缩，默认会压缩，但是效果不错，不影响图片分辨率大小.
-    fullscreen.save(file_path, "PNG");
+    if(_is_compressed) {
+        fullscreen.save(file_path, "PNG");
+    } else {
+        fullscreen.save(file_path, "PNG", 100);
+    }
+
+    // 截图完毕再显示所有窗体.
+    emit showRequested();
 }
 
 void ToolBar::on_pShutdownBtn_clicked()
