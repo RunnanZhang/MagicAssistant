@@ -16,5 +16,6 @@
         <file>images/shutdown_64.png</file>
         <file>images/update_32.png</file>
         <file>images/update_64.png</file>
+        <file>images/app.icns</file>
     </qresource>
 </RCC>

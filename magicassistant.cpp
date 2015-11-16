@@ -31,6 +31,10 @@ MagicAssistant::MagicAssistant(QWidget *parent) :
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
 
+#ifdef Q_OS_MAC
+    setAttribute(Qt::WA_MacAlwaysShowToolWindow);
+#endif
+
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(updateState()));
 
