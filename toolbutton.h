@@ -3,6 +3,8 @@
 
 #include <QToolButton>
 
+class QParallelAnimationGroup;
+
 class ToolButton : public QToolButton
 {
     Q_OBJECT
@@ -29,6 +31,9 @@ private:
 
     ///< \note 是否绘制小图标.
     bool _is_draw_small;
+
+    ///< \note 显示图标的渐进动画.
+    QParallelAnimationGroup *_group;
 };
 
 #endif // TOOLBUTTON_H
