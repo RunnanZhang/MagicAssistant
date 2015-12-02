@@ -15,6 +15,12 @@
 #include <QTimer>
 #include <QDebug>
 #include <QProcess>
+#include <QInputDialog>
+#include <QDateTime>
+#include <QDesktopWidget>
+#include <QScreen>
+
+#include <windows.h>
 
 MagicAssistant::MagicAssistant(QWidget *parent) :
     QWidget(parent),
@@ -25,8 +31,6 @@ MagicAssistant::MagicAssistant(QWidget *parent) :
     _pixmap.load(":/images/james.png");
 
     _toolbar = new ToolBar;
-    connect(_toolbar, &ToolBar::hideRequested, this, [=] () {hideAll();});
-    connect(_toolbar, &ToolBar::showRequested, this, [=] () {showAll();});
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -38,11 +42,15 @@ MagicAssistant::MagicAssistant(QWidget *parent) :
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(updateState()));
 
-    initializeGeometry();
+    initGeometry();
 
-    initializeTray();
+    initTray();
 
-    initializeMenu();
+    initMenu();
+
+    initHotKey();
+
+    initToolBarFunction();
 }
 
 MagicAssistant::~MagicAssistant()
@@ -54,9 +62,13 @@ MagicAssistant::~MagicAssistant()
     //将位置信息写入配置文件.
     QSettings regedit(SETTING_PATH, QSettings::IniFormat);
     regedit.setValue(GEOMETRY_KEY, this->geometry());
+
+    // 注销此次注册，否则此快捷键再也注册不了了。除非重启.
+    UnregisterHotKey((HWND)winId(), 1);
+    UnregisterHotKey((HWND)winId(), 2);
 }
 
-void MagicAssistant::initializeGeometry()
+void MagicAssistant::initGeometry()
 {
     QRect desktop = QApplication::desktop()->geometry();
     QSettings regedit(SETTING_PATH, QSettings::IniFormat);
@@ -71,7 +83,7 @@ void MagicAssistant::initializeGeometry()
     this->setGeometry(_geometry);
 }
 
-void MagicAssistant::initializeTray()
+void MagicAssistant::initTray()
 {
     _system_tray = new QSystemTrayIcon(this);
     QObject::connect(_system_tray, &QSystemTrayIcon::activated, this, &MagicAssistant::trayActivated);
@@ -91,6 +103,23 @@ void MagicAssistant::initializeTray()
     }
 }
 
+void MagicAssistant::initHotKey()
+{
+    // 注册快捷键.
+    RegisterHotKey((HWND)winId(), 1, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'M');
+    RegisterHotKey((HWND)winId(), 2, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'N');
+}
+
+void MagicAssistant::initToolBarFunction()
+{
+    connect(_toolbar, &ToolBar::updateMetaDataRequested, this, &MagicAssistant::updateMetaData);
+    connect(_toolbar, &ToolBar::vsbuildRequested, this, &MagicAssistant::execVSBuild);
+    connect(_toolbar, &ToolBar::openCommandRequested, this, &MagicAssistant::openCommand);
+    connect(_toolbar, &ToolBar::openProjectDirRequested, this, &MagicAssistant::openProjectDir);
+    connect(_toolbar, &ToolBar::screenShotRequested, this, &MagicAssistant::screenShot);
+    connect(_toolbar, &ToolBar::shutdownRequested, this, &MagicAssistant::shutdown);
+}
+
 void MagicAssistant::autoStart(bool is_start)
 {
     QSettings regedit(REGEDIT_AUTO_START_PATH, QSettings::NativeFormat);
@@ -101,7 +130,6 @@ void MagicAssistant::autoStart(bool is_start)
     } else {
         regedit.setValue(REGEDIT_KEY, QVariant());
     }
-
 }
 
 void MagicAssistant::paintEvent(QPaintEvent*)
@@ -183,6 +211,31 @@ void MagicAssistant::updateState()
     }
 }
 
+bool MagicAssistant::nativeEvent(const QByteArray &eventType, void *message, long *result)
+{
+    Q_UNUSED(result);
+    // windows系统下,message类型才为MSG.
+    if(eventType == "windows_generic_MSG")
+    {
+        MSG* msg = reinterpret_cast<MSG*>(message);
+
+        if(msg->message == WM_HOTKEY)
+        {
+            switch(msg->wParam)
+            {
+            case 1:
+                updateMetaData();
+                break;
+
+            case 2:
+                execVSBuild();
+                break;
+            }
+        }
+    }
+    return false;
+}
+
 void MagicAssistant::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason == QSystemTrayIcon::DoubleClick) {
@@ -207,13 +260,13 @@ void MagicAssistant::openInExplorer()
 
 void MagicAssistant::screenshotSetting(bool is_compressed)
 {
-    _toolbar->setCompressedEnable(is_compressed);
+    _is_compressed = is_compressed;
 
     QSettings set(SETTING_PATH, QSettings::IniFormat);
     set.setValue(SCREENSHOT_KEY, is_compressed);
 }
 
-void MagicAssistant::initializeMenu()
+void MagicAssistant::initMenu()
 {
     _menu = new QMenu(this);
     connect(this, &QWidget::customContextMenuRequested, this, [=] () {_menu->exec(QCursor::pos());});
@@ -301,13 +354,90 @@ void MagicAssistant::initializeMenu()
     _menu->addSeparator();
 
     // 初始化菜单checked状态.
-    bool is_compressed = set.value(SCREENSHOT_KEY, true).toBool();
-    _toolbar->setCompressedEnable(is_compressed);
-    screenshotAction->setChecked(is_compressed);
+    _is_compressed = set.value(SCREENSHOT_KEY, true).toBool();
+    screenshotAction->setChecked(_is_compressed);
 
     ///< 隐藏窗体.
     _menu->addSeparator();
     QAction *hideAction = _menu->addAction(tr("&Hide to System Tray"));
     connect(hideAction, &QAction::triggered, this, [=] () {hideAll();});
+}
+
+void MagicAssistant::updateMetaData()
+{
+    QProcess process;
+    QString str = QApplication::applicationDirPath() + "/execute/update.bat";
+    process.startDetached(str);
+}
+
+void MagicAssistant::execVSBuild()
+{
+    QProcess process;
+    QString str = QApplication::applicationDirPath() + "/execute/vsbuild.bat";
+    process.startDetached(str);
+}
+
+void MagicAssistant::openCommand()
+{
+    QProcess::startDetached("cmd");
+}
+
+void MagicAssistant::openProjectDir()
+{
+    // start是cmd内部命令，必须这么调用，/c是执行完关闭cmd的参数.具体可查阅cmd的帮助(cmd /?).
+    //QProcess::startDetached("cmd /c start C:/Workspace/OrigineBeta/Builds/Win/Origine/bin");
+
+    //为了可编辑，将此代码也移动到外部的bat中.
+    QProcess process;
+    QString str = QApplication::applicationDirPath() + "/execute/open.bat";
+    process.startDetached(str);
+}
+
+void MagicAssistant::screenShot()
+{
+    // 先隐藏所有窗体.
+    hideAll();
+
+    // QScreen没有构造函数，必须通过次获取.
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QPixmap fullscreen = screen->grabWindow(QApplication::desktop()->winId());
+
+    //以当前时间命名.
+    QDate date = QDate::currentDate();
+    QTime time = QTime::currentTime();
+    QString name = QString("%1%2%3").arg(date.year()).arg(date.month()).arg(date.day());
+    name += QString("%1%2%3").arg(time.hour()).arg(time.minute()).arg(time.second());
+
+    //没有文件夹则新建.
+    QDir dir("./resources/screenshot");
+    if(!dir.exists()) {
+        dir.mkpath(dir.absolutePath());
+    }
+
+    QString file_path = dir.absolutePath() + "/" + name + ".png";
+
+    // 可以调第三个形参，为图片质量，100是无压缩，默认会压缩，但是效果不错，不影响图片分辨率大小.
+    if(_is_compressed) {
+        fullscreen.save(file_path, "PNG");
+    } else {
+        fullscreen.save(file_path, "PNG", 100);
+    }
+
+    // 截图完毕再显示所有窗体.
+    emit showAll();
+}
+
+void MagicAssistant::shutdown()
+{
+    bool ok;
+    int time = QInputDialog::getInt(_toolbar, tr("Auto shutdown setting"), tr("Time(ms):"),
+                                    0, 0, 2147483647, 1, &ok);
+
+    if(ok) {
+        //由于shutdown命令,-t后面的参数只要大于0，默认就会执行-f参数，-f是强制关闭程序，所以此句会导致程序退出...
+        QProcess::startDetached(QString("shutdown -s -t %1").arg(time));
+    } else {
+        //QProcess::startDetached("shutdown -a");
+    }
 }
 

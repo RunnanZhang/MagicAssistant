@@ -15,20 +15,25 @@ public:
     explicit ToolBar(QWidget *parent = 0);
     ~ToolBar();
 
-    ///< \note 屏幕截图是否压缩.
-    inline void setCompressedEnable(bool is_compressed) {_is_compressed = is_compressed;}
-
 signals:
     ///< \note 为了不让本程序出现在截图中，截图时先隐藏所有窗体，之后在显示.
     void hideRequested();
     void showRequested();
+
+    ///< ToolButton功能信号，实现在主窗口中实现.
+    void updateMetaDataRequested();
+    void vsbuildRequested();
+    void openCommandRequested();
+    void openProjectDirRequested();
+    void screenShotRequested();
+    void shutdownRequested();
 
 private slots:
     void on_toolButton_clicked();
     void on_toolButton2_clicked();
     void on_pOpenBtn_clicked();
 
-    ///< \note 打开命令行.
+    ///< \note 打开Command.
     void on_pCommandBtn_clicked();
 
     ///< \note 屏幕截图.
@@ -39,9 +44,6 @@ private slots:
 
 private:
     Ui::ToolBar *ui;
-
-    ///< \note 屏幕截图是否压缩.
-    bool _is_compressed;
 };
 
 #endif // TOOLBAR_H

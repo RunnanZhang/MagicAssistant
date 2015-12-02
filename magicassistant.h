@@ -26,6 +26,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *);
     void enterEvent(QEvent *event);
+    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
 private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
@@ -42,15 +43,39 @@ private slots:
     ///< \note 屏幕截图设置.是否压缩图片.
     void screenshotSetting(bool is_compressed);
 
+    ///< \note 更新元数据.
+    void updateMetaData();
+
+    ///< \note 执行vsbuild.
+    void execVSBuild();
+
+    ///< \note 打开Cmd.
+    void openCommand();
+
+    ///< \note 打开项目工程目录.
+    void openProjectDir();
+
+    ///< \note 全屏截图.
+    void screenShot();
+
+    ///< \note 定时关机.
+    void shutdown();
+
 private:
     ///< \note 初始化托盘相关.
-    void initializeTray();
+    void initTray();
 
     ///< \note 初始化位置.
-    void initializeGeometry();
+    void initGeometry();
 
     ///< \note 初始化菜单.
-    void initializeMenu();
+    void initMenu();
+
+    ///< \note 初始化全局热键.
+    void initHotKey();
+
+    ///< \note toolbar功能槽函数的连接.
+    void initToolBarFunction();
 
     ///< \note 显示toolbar.
     void showToolBar();
@@ -90,6 +115,9 @@ private:
 
     ///< \note 右键菜单.
     QMenu *_menu;
+
+    ///< \note 屏幕截图是否压缩.
+    bool _is_compressed;
 };
 
 #endif // MAGICASSISTANT_H
