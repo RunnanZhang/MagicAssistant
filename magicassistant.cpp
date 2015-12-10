@@ -398,7 +398,7 @@ void MagicAssistant::screenShot()
     // 先隐藏所有窗体.
     hideAll();
 
-    // QScreen没有构造函数，必须通过次获取.
+    // QScreen没有构造函数，必须通过此获取.
     QScreen *screen = QGuiApplication::primaryScreen();
     QPixmap fullscreen = screen->grabWindow(QApplication::desktop()->winId());
 
