@@ -424,7 +424,7 @@ void MagicAssistant::screenShot()
     }
 
     // 截图完毕再显示所有窗体.
-    emit showAll();
+    showAll();
 }
 
 void MagicAssistant::shutdown()
