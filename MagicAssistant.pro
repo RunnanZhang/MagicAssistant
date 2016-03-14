@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,12 +16,14 @@ CONFIG += c++11
 SOURCES += main.cpp\
         magicassistant.cpp \
     toolbar.cpp \
-    toolbutton.cpp
+    toolbutton.cpp \
+    nbaassistant.cpp
 
 HEADERS  += magicassistant.h \
     toolbar.h \
     toolbutton.h \
-    defines.h
+    defines.h \
+    nbaassistant.h
 
 FORMS    += magicassistant.ui \
     toolbar.ui

@@ -1,3 +1,6 @@
+/*
+ * 工具栏类，鼠标进入悬浮窗区域则显示工具栏，用于放置一些常用功能.
+*/
 #ifndef TOOLBAR_H
 #define TOOLBAR_H
 

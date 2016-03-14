@@ -110,9 +110,6 @@ private:
     ///< \note 鼠标进入窗体时打开的定时器，用于检测鼠标位置，移出有效范围内则停止，并隐藏toolbar.
     QTimer *_timer;
 
-    ///< \note 主场体和toolbar联合起来的矩形.
-    QRect _unite_geometry;
-
     ///< \note 右键菜单.
     QMenu *_menu;
 
