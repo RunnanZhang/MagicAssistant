@@ -2,6 +2,7 @@
 #include "ui_magicassistant.h"
 #include "toolbar.h"
 #include "defines.h"
+#include "nbaassistant.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -66,6 +67,7 @@ MagicAssistant::~MagicAssistant()
     // 注销此次注册，否则此快捷键再也注册不了了。除非重启.
     UnregisterHotKey((HWND)winId(), 1);
     UnregisterHotKey((HWND)winId(), 2);
+    UnregisterHotKey((HWND)winId(), 3);
 }
 
 void MagicAssistant::initGeometry()
@@ -98,9 +100,11 @@ void MagicAssistant::initTray()
     _system_tray->setIcon(icon);
     _system_tray->setToolTip("Magic Assistant");
     _system_tray->show();
-    if (_system_tray->isVisible()) {
+
+	// 先屏蔽启动弹窗功能.每次启动弹窗太烦人.
+    /*if (_system_tray->isVisible()) {
         _system_tray->showMessage(tr("Information"), tr("Magic Assistant stay in system tray"));
-    }
+    }*/
 }
 
 void MagicAssistant::initHotKey()
@@ -108,6 +112,7 @@ void MagicAssistant::initHotKey()
     // 注册快捷键.
     RegisterHotKey((HWND)winId(), 1, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'M');
     RegisterHotKey((HWND)winId(), 2, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'N');
+    RegisterHotKey((HWND)winId(), 3, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'Z');
 }
 
 void MagicAssistant::initToolBarFunction()
@@ -229,6 +234,10 @@ bool MagicAssistant::nativeEvent(const QByteArray &eventType, void *message, lon
 
             case 2:
                 execVSBuild();
+                break;
+
+            case 3:
+                showTodayScore();
                 break;
             }
         }
@@ -439,5 +448,19 @@ void MagicAssistant::shutdown()
     } else {
         //QProcess::startDetached("shutdown -a");
     }
+}
+
+void MagicAssistant::showTodayScore()
+{
+    NBAAssistant nba;
+    QList<TeamScore> list;
+    nba.getTodayScore(list);
+	QString showMessage;
+	for (auto i = list.begin(); i != list.end(); ++i)
+	{
+		showMessage += (*i).homeTeam + QString::number((*i).homeScore)
+			+ " : " + (*i).awayTeam + QString::number((*i).awayScore);
+	}
+	_system_tray->showMessage(tr("Information"), showMessage);
 }
 

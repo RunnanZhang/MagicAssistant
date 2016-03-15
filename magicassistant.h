@@ -52,6 +52,9 @@ private slots:
     ///< \note 打开Cmd.
     void openCommand();
 
+    ///< \note 查询当天比分.
+    void showTodayScore();
+
     ///< \note 打开项目工程目录.
     void openProjectDir();
 

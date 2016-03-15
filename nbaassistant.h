@@ -6,16 +6,26 @@
 
 #include <QtNetwork>
 
+///< 存储主队客队名字及其比分.
+class TeamScore
+{
+public:
+    QString homeTeam;
+    QString awayTeam;
+    quint16 homeScore;
+    quint16 awayScore;
+};
+
 class NBAAssistant
 {
 public:
     NBAAssistant();
     ~NBAAssistant();
 
-    void getTodayScore();
+    void getTodayScore(QList<TeamScore> &list);
 
 private:
-    void analyzeCode(QString source);
+    void analyzeCode(QString source, QList<TeamScore> &list);
 };
 
 #endif // NBAASSISTANT_H
