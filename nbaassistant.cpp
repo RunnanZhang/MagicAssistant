@@ -41,11 +41,13 @@ void NBAAssistant::analyzeCode(QString source, QList<TeamScore> &list)
         data.homeTeam = source.section('\"', 1, 1);
 
         nCPos = source.indexOf("<span class=\"bifen\">");
-        // 没有比分是未开赛.
-        if(nCPos != -1)
+		source = source.mid(nCPos);
+		// 若比赛未开始，那么bifen下面没有title一栏.
+		nCPos = source.indexOf("title");
+		int nTemp = source.indexOf("<span class=\"nameText\">");
+
+        if(nCPos < nTemp)
         {
-            source = source.mid(nCPos);
-            nCPos = source.indexOf("title");
             source = source.mid(nCPos);
             nCPos = source.indexOf(">") + 1;
             source = source.mid(nCPos);
@@ -61,7 +63,6 @@ void NBAAssistant::analyzeCode(QString source, QList<TeamScore> &list)
             data.awayScore = 0;
         }
 
-        source = source.mid(nCPos);
         nCPos = source.indexOf("<span class=\"nameText\">");
         source = source.mid(nCPos);
         nCPos = source.indexOf("title");
