@@ -458,12 +458,13 @@ void MagicAssistant::showTodayScore()
 {
 
     QQmlEngine engine;
-    NBAAssistant nbaobj(this);
+    NBAAssistant nbaobj;
     QList<TeamScore> list;
     nbaobj.getTodayScore(list);
     engine.rootContext()->setContextProperty("nbaobj", &nbaobj);
     QQuickView *view = new QQuickView(&engine, NULL);
-    view->setSource(QUrl("./ScoreBoard.qml"));
+    //view->setFlags(Qt::FramelessWindowHint);
+    view->setSource(QUrl("qrc:/ScoreBoard.qml"));
     view->show();
 
 //    //NBAAssistant nba;

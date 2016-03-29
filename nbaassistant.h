@@ -18,7 +18,7 @@ public:
     quint16 awayScore;
 };
 
-//Q_DECLARE_METATYPE(TeamScore)
+Q_DECLARE_METATYPE(TeamScore)
 
 class NBAAssistant : public QObject
 {
@@ -27,7 +27,7 @@ class NBAAssistant : public QObject
     Q_PROPERTY(QList<TeamScore> teamscore READ teamscore WRITE setTeamScore NOTIFY teamscoreChanged)
 
 public:
-    NBAAssistant(QObject *parent);
+    NBAAssistant(QObject *parent = 0);
     ~NBAAssistant();
 
     void getTodayScore(QList<TeamScore> &list);

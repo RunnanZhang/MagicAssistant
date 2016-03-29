@@ -3,14 +3,16 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.3
 
 Item {
-     width: 200; height:200
-     Rectangle {
-         color: "green"
-         width: 100; height: 100
-         objectName: "rect"
-         Rectangle {
-             color: "blue"
-             x: 100; y: 100; width: 100; height: 100
-         }
-     }
+    id: buttonrow
+    width: 250; height: 50
+    RowLayout {
+        TextField {
+            id: txtvalue1
+            text: nbaobj.teamscore[0].homeTeam // get the value by MyCppObject::value1
+        }
+        TextField {
+            id: txtvalue2
+            text: "23232" // the value by MyCppObject::value2
+        }
+    }
 }

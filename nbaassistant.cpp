@@ -3,7 +3,7 @@
 NBAAssistant::NBAAssistant(QObject *parent) :
     QObject(parent)
 {
-    //qRegisterMetaType<TeamScore>("TeamScore");
+    qRegisterMetaType<TeamScore>("TeamScore");
 }
 
 NBAAssistant::~NBAAssistant()
