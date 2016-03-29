@@ -21,6 +21,10 @@
 #include <QDesktopWidget>
 #include <QScreen>
 
+#include <QQuickView>
+#include <QQmlEngine>
+#include <QQmlContext>
+
 #include <windows.h>
 
 MagicAssistant::MagicAssistant(QWidget *parent) :
@@ -452,15 +456,25 @@ void MagicAssistant::shutdown()
 
 void MagicAssistant::showTodayScore()
 {
-    NBAAssistant nba;
+
+    QQmlEngine engine;
+    NBAAssistant nbaobj(this);
     QList<TeamScore> list;
-    nba.getTodayScore(list);
-	QString showMessage;
-	for (auto i = list.begin(); i != list.end(); ++i)
-	{
-		showMessage += (*i).homeTeam + QString::number((*i).homeScore)
-			+ " : " + (*i).awayTeam + QString::number((*i).awayScore);
-	}
-	_system_tray->showMessage(tr("Information"), showMessage);
+    nbaobj.getTodayScore(list);
+    engine.rootContext()->setContextProperty("nbaobj", &nbaobj);
+    QQuickView *view = new QQuickView(&engine, NULL);
+    view->setSource(QUrl("./ScoreBoard.qml"));
+    view->show();
+
+//    //NBAAssistant nba;
+//    QList<TeamScore> list;
+//    //nba.getTodayScore(list);
+//	QString showMessage;
+//	for (auto i = list.begin(); i != list.end(); ++i)
+//	{
+//		showMessage += (*i).homeTeam + QString::number((*i).homeScore)
+//			+ " : " + (*i).awayTeam + QString::number((*i).awayScore);
+//	}
+//	_system_tray->showMessage(tr("Information"), showMessage);
 }
 

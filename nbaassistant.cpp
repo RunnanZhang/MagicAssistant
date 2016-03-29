@@ -1,8 +1,9 @@
 #include "nbaassistant.h"
 
-NBAAssistant::NBAAssistant()
+NBAAssistant::NBAAssistant(QObject *parent) :
+    QObject(parent)
 {
-
+    //qRegisterMetaType<TeamScore>("TeamScore");
 }
 
 NBAAssistant::~NBAAssistant()
@@ -10,9 +11,20 @@ NBAAssistant::~NBAAssistant()
 
 }
 
+QList<TeamScore> NBAAssistant::teamscore() const
+{
+    return _TeamScore;
+}
+
+void NBAAssistant::setTeamScore(const QList<TeamScore>& teamscore)
+{
+    _TeamScore = teamscore;
+    emit teamscoreChanged(teamscore);
+}
+
 void NBAAssistant::getTodayScore(QList<TeamScore> &list)
 {
-    QUrl url = "http://nba.hupu.com/";
+    QUrl url = "http://nba.hupu.com/boxscore/boxscore.php?league=NBA";
     QEventLoop loop;
 
     QNetworkAccessManager manager;
@@ -25,8 +37,17 @@ void NBAAssistant::getTodayScore(QList<TeamScore> &list)
     loop.exec();
 
     // 当finished信号发出，事件循环结束，此时网页源码已下载完毕，可以开始解析.
-    QString source = QString::fromLocal8Bit(reply->readAll());
-    analyzeCode(source, list);
+    //QString source = QString::fromLocal8Bit(reply->readAll());
+    QString source = QString::fromUtf8(reply->readAll());
+    //analyzeCode(source, list);
+
+    QFile file("E:\\out.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    out.setCodec("utf-8");
+    out << source;
 }
 
 void NBAAssistant::analyzeCode(QString source, QList<TeamScore> &list)
@@ -41,10 +62,10 @@ void NBAAssistant::analyzeCode(QString source, QList<TeamScore> &list)
         data.homeTeam = source.section('\"', 1, 1);
 
         nCPos = source.indexOf("<span class=\"bifen\">");
-		source = source.mid(nCPos);
-		// 若比赛未开始，那么bifen下面没有title一栏.
-		nCPos = source.indexOf("title");
-		int nTemp = source.indexOf("<span class=\"nameText\">");
+        source = source.mid(nCPos);
+        // 若比赛未开始，那么bifen下面没有title一栏.
+        nCPos = source.indexOf("title");
+        int nTemp = source.indexOf("<span class=\"nameText\">");
 
         if(nCPos < nTemp)
         {
@@ -69,7 +90,8 @@ void NBAAssistant::analyzeCode(QString source, QList<TeamScore> &list)
         source = source.mid(nCPos);
         data.awayTeam = source.section('\"', 1, 1);
 
-        list.append(data);
+        list << data;
+        //list.append(data);
 
         //查找下一组.
         nCPos = source.indexOf("<span class=\"nameText\">");

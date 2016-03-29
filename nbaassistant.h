@@ -6,6 +6,8 @@
 
 #include <QtNetwork>
 
+#include <QObject>
+
 ///< 存储主队客队名字及其比分.
 class TeamScore
 {
@@ -16,16 +18,31 @@ public:
     quint16 awayScore;
 };
 
-class NBAAssistant
+//Q_DECLARE_METATYPE(TeamScore)
+
+class NBAAssistant : public QObject
 {
+    Q_OBJECT
+
+    Q_PROPERTY(QList<TeamScore> teamscore READ teamscore WRITE setTeamScore NOTIFY teamscoreChanged)
+
 public:
-    NBAAssistant();
+    NBAAssistant(QObject *parent);
     ~NBAAssistant();
 
     void getTodayScore(QList<TeamScore> &list);
 
+    QList<TeamScore> teamscore() const;
+    void setTeamScore(const QList<TeamScore>& teamscore);
+
+signals:
+    void teamscoreChanged(const QList<TeamScore>&);
+
 private:
     void analyzeCode(QString source, QList<TeamScore> &list);
+
+private:
+    QList<TeamScore> _TeamScore;
 };
 
 #endif // NBAASSISTANT_H
