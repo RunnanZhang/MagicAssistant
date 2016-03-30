@@ -9,40 +9,52 @@
 #include <QObject>
 
 ///< 存储主队客队名字及其比分.
-class TeamScore
+class TeamScore : public QObject
 {
-public:
-    QString homeTeam;
-    QString awayTeam;
-    quint16 homeScore;
-    quint16 awayScore;
-};
+    Q_OBJECT
+    Q_PROPERTY(QString homeTeam READ getHomeTeam)
+    Q_PROPERTY(QString awayTeam READ getAwayTeam)
+    Q_PROPERTY(quint16 homeScore READ getHomeScore)
+    Q_PROPERTY(quint16 awayScore READ getAwayScore)
 
-Q_DECLARE_METATYPE(TeamScore)
+public:
+    TeamScore(QObject *parent = 0) : QObject(parent) {}
+    QString getHomeTeam() const {return _homeTeam;}
+    QString getAwayTeam() const {return _awayTeam;}
+    quint16 getHomeScore() const {return _homeScore;}
+    quint16 getAwayScore() const {return _awayScore;}
+
+public:
+    QString _homeTeam;
+    QString _awayTeam;
+    quint16 _homeScore;
+    quint16 _awayScore;
+};
 
 class NBAAssistant : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QList<TeamScore> teamscore READ teamscore WRITE setTeamScore NOTIFY teamscoreChanged)
+    Q_PROPERTY(QList<TeamScore*> teamscore READ getTeamscore WRITE setTeamScore NOTIFY teamscoreChanged)
+
 
 public:
     NBAAssistant(QObject *parent = 0);
     ~NBAAssistant();
 
-    void getTodayScore(QList<TeamScore> &list);
+    void getTodayScore();
 
-    QList<TeamScore> teamscore() const;
-    void setTeamScore(const QList<TeamScore>& teamscore);
+    QList<TeamScore*> getTeamscore() const;
+    void setTeamScore(const QList<TeamScore*>& teamscore);
 
 signals:
-    void teamscoreChanged(const QList<TeamScore>&);
+    void teamscoreChanged(const QList<TeamScore*>&);
 
 private:
-    void analyzeCode(QString source, QList<TeamScore> &list);
+    void analyzeCode(QString source);
 
 private:
-    QList<TeamScore> _TeamScore;
+    QList<TeamScore*> _TeamScore;
 };
 
 #endif // NBAASSISTANT_H

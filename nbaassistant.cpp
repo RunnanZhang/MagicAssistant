@@ -3,7 +3,7 @@
 NBAAssistant::NBAAssistant(QObject *parent) :
     QObject(parent)
 {
-    qRegisterMetaType<TeamScore>("TeamScore");
+    qRegisterMetaType<QList<TeamScore*>>("TeamScore");
 }
 
 NBAAssistant::~NBAAssistant()
@@ -11,20 +11,20 @@ NBAAssistant::~NBAAssistant()
 
 }
 
-QList<TeamScore> NBAAssistant::teamscore() const
+QList<TeamScore*> NBAAssistant::getTeamscore() const
 {
     return _TeamScore;
 }
 
-void NBAAssistant::setTeamScore(const QList<TeamScore>& teamscore)
+void NBAAssistant::setTeamScore(const QList<TeamScore*>& teamscore)
 {
     _TeamScore = teamscore;
     emit teamscoreChanged(teamscore);
 }
 
-void NBAAssistant::getTodayScore(QList<TeamScore> &list)
+void NBAAssistant::getTodayScore()
 {
-    QUrl url = "http://nba.hupu.com/boxscore/boxscore.php?league=NBA";
+    QUrl url = "http://nba.hupu.com/";
     QEventLoop loop;
 
     QNetworkAccessManager manager;
@@ -37,29 +37,20 @@ void NBAAssistant::getTodayScore(QList<TeamScore> &list)
     loop.exec();
 
     // 当finished信号发出，事件循环结束，此时网页源码已下载完毕，可以开始解析.
-    //QString source = QString::fromLocal8Bit(reply->readAll());
-    QString source = QString::fromUtf8(reply->readAll());
-    //analyzeCode(source, list);
-
-    QFile file("E:\\out.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
-
-    QTextStream out(&file);
-    out.setCodec("utf-8");
-    out << source;
+    QString source = QString::fromLocal8Bit(reply->readAll());
+    analyzeCode(source);
 }
 
-void NBAAssistant::analyzeCode(QString source, QList<TeamScore> &list)
+void NBAAssistant::analyzeCode(QString source)
 {
     int nCPos = source.indexOf("<span class=\"nameText\">");
     while(nCPos != -1)
     {
-        TeamScore data;
+        TeamScore *data = new TeamScore;
         source = source.mid(nCPos);
         nCPos = source.indexOf("title");
         source = source.mid(nCPos);
-        data.homeTeam = source.section('\"', 1, 1);
+        data->_homeTeam = source.section('\"', 1, 1);
 
         nCPos = source.indexOf("<span class=\"bifen\">");
         source = source.mid(nCPos);
@@ -75,23 +66,22 @@ void NBAAssistant::analyzeCode(QString source, QList<TeamScore> &list)
             nCPos = source.indexOf("<");
             QString score = source.left(nCPos);
             QStringList scoreList = score.split(":");
-            data.homeScore = scoreList[0].toUInt();
-            data.awayScore = scoreList[1].toUInt();
+            data->_homeScore = scoreList[0].toUInt();
+            data->_awayScore = scoreList[1].toUInt();
         }
         else
         {
-            data.homeScore = 0;
-            data.awayScore = 0;
+            data->_homeScore = 0;
+            data->_awayScore = 0;
         }
 
         nCPos = source.indexOf("<span class=\"nameText\">");
         source = source.mid(nCPos);
         nCPos = source.indexOf("title");
         source = source.mid(nCPos);
-        data.awayTeam = source.section('\"', 1, 1);
+        data->_awayTeam = source.section('\"', 1, 1);
 
-        list << data;
-        //list.append(data);
+        _TeamScore << data;
 
         //查找下一组.
         nCPos = source.indexOf("<span class=\"nameText\">");

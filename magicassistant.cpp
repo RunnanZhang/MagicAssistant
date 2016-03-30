@@ -456,11 +456,10 @@ void MagicAssistant::shutdown()
 
 void MagicAssistant::showTodayScore()
 {
-
+    qmlRegisterType<TeamScore>("CustomComponents", 1, 0, "TeamScore");
     QQmlEngine engine;
     NBAAssistant nbaobj;
-    QList<TeamScore> list;
-    nbaobj.getTodayScore(list);
+    nbaobj.getTodayScore();
     engine.rootContext()->setContextProperty("nbaobj", &nbaobj);
     QQuickView *view = new QQuickView(&engine, NULL);
     //view->setFlags(Qt::FramelessWindowHint);
