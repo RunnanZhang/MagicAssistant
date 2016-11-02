@@ -456,25 +456,25 @@ void MagicAssistant::shutdown()
 
 void MagicAssistant::showTodayScore()
 {
-    qmlRegisterType<TeamScore>("CustomComponents", 1, 0, "TeamScore");
-    QQmlEngine engine;
-    NBAAssistant nbaobj;
-    nbaobj.getTodayScore();
-    engine.rootContext()->setContextProperty("nbaobj", &nbaobj);
-    QQuickView *view = new QQuickView(&engine, NULL);
-    //view->setFlags(Qt::FramelessWindowHint);
-    view->setSource(QUrl("qrc:/ScoreBoard.qml"));
-    view->show();
+//    qmlRegisterType<TeamScore>("CustomComponents", 1, 0, "TeamScore");
+//    QQmlEngine engine;
+//    NBAAssistant nbaobj;
+//    nbaobj.getTodayScore();
+//    engine.rootContext()->setContextProperty("nbaobj", &nbaobj);
+//    QQuickView *view = new QQuickView(&engine, NULL);
+//    //view->setFlags(Qt::FramelessWindowHint);
+//    view->setSource(QUrl("qrc:/ScoreBoard.qml"));
+//    view->show();
 
-//    //NBAAssistant nba;
-//    QList<TeamScore> list;
-//    //nba.getTodayScore(list);
-//	QString showMessage;
-//	for (auto i = list.begin(); i != list.end(); ++i)
-//	{
-//		showMessage += (*i).homeTeam + QString::number((*i).homeScore)
-//			+ " : " + (*i).awayTeam + QString::number((*i).awayScore);
-//	}
-//	_system_tray->showMessage(tr("Information"), showMessage);
+    NBAAssistant nba;
+    nba.getTodayScore();
+    QList<TeamScore*> list = nba.getTeamscore();
+    QString showMessage;
+    for (auto i = list.begin(); i != list.end(); ++i)
+    {
+        showMessage += (*i)->_homeTeam + QString::number((*i)->_homeScore)
+            + " : " + (*i)->_awayTeam + QString::number((*i)->_awayScore);
+    }
+    _system_tray->showMessage(tr("Information"), showMessage);
 }
 

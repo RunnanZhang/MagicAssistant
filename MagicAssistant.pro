@@ -13,6 +13,8 @@ TEMPLATE = app
 
 CONFIG += c++11
 
+LIBS += User32.lib
+
 SOURCES += main.cpp\
         magicassistant.cpp \
     toolbar.cpp \
