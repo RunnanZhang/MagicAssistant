@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network quick
+QT       += core gui network quick xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,13 +19,15 @@ SOURCES += main.cpp\
         magicassistant.cpp \
     toolbar.cpp \
     toolbutton.cpp \
-    nbaassistant.cpp
+    nbaassistant.cpp \
+    Settings.cpp
 
 HEADERS  += magicassistant.h \
     toolbar.h \
     toolbutton.h \
     defines.h \
-    nbaassistant.h
+    nbaassistant.h \
+    Settings.h
 
 FORMS    += magicassistant.ui \
     toolbar.ui

@@ -3,6 +3,7 @@
 #include "toolbar.h"
 #include "defines.h"
 #include "nbaassistant.h"
+#include "Settings.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -65,25 +66,34 @@ MagicAssistant::~MagicAssistant()
     delete _toolbar;
 
     //将位置信息写入配置文件.
-    QSettings regedit(SETTING_PATH, QSettings::IniFormat);
-    regedit.setValue(GEOMETRY_KEY, this->geometry());
+    Settings set(SETTING_PATH);
+    set.setValue(GEOMETRY_KEY, this->geometry());
 
     // 注销此次注册，否则此快捷键再也注册不了了。除非重启.
-    UnregisterHotKey((HWND)winId(), 1);
-    UnregisterHotKey((HWND)winId(), 2);
-    UnregisterHotKey((HWND)winId(), 3);
+    QList<quint32> idList = _hotkey.keys();
+    for(auto vk : idList) {
+        UnregisterHotKey((HWND)winId(), vk);
+    }
 }
 
 void MagicAssistant::initGeometry()
 {
     QRect desktop = QApplication::desktop()->geometry();
-    QSettings regedit(SETTING_PATH, QSettings::IniFormat);
+    Settings set(SETTING_PATH);
 
-    if(regedit.value(GEOMETRY_KEY) == QVariant()) {
+    bool isRestore = false;
+
+    if(set.value(GEOMETRY_KEY) != QVariant()) {
+       _geometry = set.value(GEOMETRY_KEY).toRect();
+
+       if(desktop.contains(_geometry)) {
+           isRestore = true;
+       }
+    }
+
+    if(!isRestore) {
         _geometry = QRect(desktop.width()-200, desktop.height()-250, 120, 150);
-        regedit.setValue(GEOMETRY_KEY, _geometry);
-    } else {
-        _geometry = regedit.value(GEOMETRY_KEY).toRect();
+        set.setValue(GEOMETRY_KEY, _geometry);
     }
 
     this->setGeometry(_geometry);
@@ -113,16 +123,51 @@ void MagicAssistant::initTray()
 
 void MagicAssistant::initHotKey()
 {
-    // 注册快捷键.
-    RegisterHotKey((HWND)winId(), 1, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'M');
-    RegisterHotKey((HWND)winId(), 2, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'N');
-    RegisterHotKey((HWND)winId(), 3, MOD_CONTROL | MOD_ALT |MOD_NOREPEAT, 'Z');
+    quint32 id = 1;
+    RegisterHotKey((HWND)winId(), id, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, 'Z');
+    id++;
+    _hotkey.insert(id, QString());
+
+
+    Settings set(SETTING_PATH);
+    QList<QVariant> hotkeyList = set.values(QLatin1String("HotKey"));
+
+    for(auto var : hotkeyList) {
+        QString hotkey = var.toString();
+        QStringList list = hotkey.split('_', QString::SkipEmptyParts);
+        quint32 modifiers = MOD_NOREPEAT;
+        quint32 vk = 0;
+
+        for(auto str : list) {
+            if(str.count() == 1) {
+                vk = str.at(0).unicode();
+            } else {
+                if(str == QLatin1String("Ctrl")) {
+                    modifiers |= MOD_CONTROL;
+                } else if(str == QLatin1String("Alt")) {
+                    modifiers |= MOD_ALT;
+                } else if(str == QLatin1String("Shift")) {
+                    modifiers |= MOD_SHIFT;
+                }
+            }
+        }
+
+        // 注册快捷键.
+        bool isOk = RegisterHotKey((HWND)winId(), id, modifiers, vk);
+
+        if(isOk) {
+            _hotkey.insert(id, set.value(hotkey).toString());
+            id++;
+        } else {
+            QMessageBox::warning(this, "warning", QString("Register hotkey %1 failed").arg(hotkey));
+        }
+    }
 }
 
 void MagicAssistant::initToolBarFunction()
 {
-    connect(_toolbar, &ToolBar::updateMetaDataRequested, this, &MagicAssistant::updateMetaData);
-    connect(_toolbar, &ToolBar::vsbuildRequested, this, &MagicAssistant::execVSBuild);
+    //connect(_toolbar, &ToolBar::updateMetaDataRequested, this, &MagicAssistant::updateMetaData);
+    //connect(_toolbar, &ToolBar::vsbuildRequested, this, &MagicAssistant::execVSBuild);
     connect(_toolbar, &ToolBar::openCommandRequested, this, &MagicAssistant::openCommand);
     connect(_toolbar, &ToolBar::openProjectDirRequested, this, &MagicAssistant::openProjectDir);
     connect(_toolbar, &ToolBar::screenShotRequested, this, &MagicAssistant::screenShot);
@@ -233,15 +278,11 @@ bool MagicAssistant::nativeEvent(const QByteArray &eventType, void *message, lon
             switch(msg->wParam)
             {
             case 1:
-                updateMetaData();
-                break;
-
-            case 2:
-                execVSBuild();
-                break;
-
-            case 3:
                 showTodayScore();
+                break;
+            default:
+                quint32 id = static_cast<quint32>(msg->wParam);
+                execProcess(_hotkey.value(id));
                 break;
             }
         }
@@ -252,7 +293,11 @@ bool MagicAssistant::nativeEvent(const QByteArray &eventType, void *message, lon
 void MagicAssistant::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason == QSystemTrayIcon::DoubleClick) {
-        showNormal();
+        if(this->isVisible()) {
+            hideAll();
+        } else {
+            showNormal();
+        }
     }
 }
 
@@ -260,7 +305,7 @@ void MagicAssistant::setOpacity(qreal opacity)
 {
     this->setWindowOpacity(opacity);
     _toolbar->setWindowOpacity(opacity);
-    QSettings set(SETTING_PATH, QSettings::IniFormat);
+    Settings set(SETTING_PATH);
     set.setValue(OPACITY_KEY, opacity);
 }
 
@@ -275,7 +320,7 @@ void MagicAssistant::screenshotSetting(bool is_compressed)
 {
     _is_compressed = is_compressed;
 
-    QSettings set(SETTING_PATH, QSettings::IniFormat);
+    Settings set(SETTING_PATH);
     set.setValue(SCREENSHOT_KEY, is_compressed);
 }
 
@@ -298,7 +343,7 @@ void MagicAssistant::initMenu()
     }
 
     ///<Begin 设置透明度菜单.此处目前没有好好的设计，采用hard coding.
-    QSettings set(SETTING_PATH, QSettings::IniFormat);
+    Settings set(SETTING_PATH);
     QActionGroup *group = new QActionGroup(this);
     qreal opacity = set.value(OPACITY_KEY, 1.0).toReal();
 
@@ -376,17 +421,10 @@ void MagicAssistant::initMenu()
     connect(hideAction, &QAction::triggered, this, [=] () {hideAll();});
 }
 
-void MagicAssistant::updateMetaData()
+void MagicAssistant::execProcess(QString filename)
 {
     QProcess process;
-    QString str = QApplication::applicationDirPath() + "/execute/update.bat";
-    process.startDetached(str);
-}
-
-void MagicAssistant::execVSBuild()
-{
-    QProcess process;
-    QString str = QApplication::applicationDirPath() + "/execute/vsbuild.bat";
+    QString str = QApplication::applicationDirPath() + QLatin1String("/execute/") + filename;qDebug() << str;
     process.startDetached(str);
 }
 

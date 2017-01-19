@@ -1,1 +1,1 @@
-start C:/Workspace/OrigineBeta/Builds/Win/Origine/bin
+start D:\Hisign\PU\trunk\PU-AFIS-10\trunk\CLIENT\C\CN\trunk

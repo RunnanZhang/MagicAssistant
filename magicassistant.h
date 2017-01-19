@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QSystemTrayIcon>
+#include <QMap>
 
 namespace Ui {
 class MagicAssistant;
@@ -43,11 +44,8 @@ private slots:
     ///< \note 屏幕截图设置.是否压缩图片.
     void screenshotSetting(bool is_compressed);
 
-    ///< \note 更新元数据.
-    void updateMetaData();
-
-    ///< \note 执行vsbuild.
-    void execVSBuild();
+    ///< \note 执行启动程序.
+    void execProcess(QString path);
 
     ///< \note 打开Cmd.
     void openCommand();
@@ -118,6 +116,9 @@ private:
 
     ///< \note 屏幕截图是否压缩.
     bool _is_compressed;
+
+    /// @brief quint32 vk id. QString 此快捷键要执行程序的名字.
+    QMap<quint32, QString> _hotkey;
 };
 
 #endif // MAGICASSISTANT_H
