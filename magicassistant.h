@@ -53,6 +53,9 @@ private slots:
     ///< \note 查询当天比分.
     void showTodayScore();
 
+    ///< \note 查询剩余时间.
+    void showRestTime();
+
     ///< \note 打开项目工程目录.
     void openProjectDir();
 

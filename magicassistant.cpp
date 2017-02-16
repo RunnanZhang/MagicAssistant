@@ -21,6 +21,7 @@
 #include <QDateTime>
 #include <QDesktopWidget>
 #include <QScreen>
+#include <QTime>
 
 #include <QQuickView>
 #include <QQmlEngine>
@@ -126,10 +127,16 @@ void MagicAssistant::initHotKey()
     quint32 id = 1;
     RegisterHotKey((HWND)winId(), id, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, 'Z');
     id++;
+    // 注销快捷键时需要用此列表.
     _hotkey.insert(id, QString());
 
+    // 剩余时间快捷键.
+    RegisterHotKey((HWND)winId(), id, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, 'T');
+    id++;
+    _hotkey.insert(id, QString());
 
     Settings set(SETTING_PATH);
+
     QList<QVariant> hotkeyList = set.values(QLatin1String("HotKey"));
 
     for(auto var : hotkeyList) {
@@ -280,6 +287,11 @@ bool MagicAssistant::nativeEvent(const QByteArray &eventType, void *message, lon
             case 1:
                 showTodayScore();
                 break;
+
+            case 2:
+                showRestTime();
+                break;
+
             default:
                 quint32 id = static_cast<quint32>(msg->wParam);
                 execProcess(_hotkey.value(id));
@@ -476,6 +488,10 @@ void MagicAssistant::screenShot()
 
     // 截图完毕再显示所有窗体.
     showAll();
+
+    if(fullscreen.isNull()) {
+        qWarning() << "Screen shot is null.";
+    }
 }
 
 void MagicAssistant::shutdown()
@@ -514,5 +530,30 @@ void MagicAssistant::showTodayScore()
             + " : " + (*i)->_awayTeam + QString::number((*i)->_awayScore);
     }
     _system_tray->showMessage(tr("Information"), showMessage);
+}
+
+void MagicAssistant::showRestTime()
+{
+    Settings set(SETTING_PATH);
+
+    QTime time;
+
+    if(set.value(TIME_KEY) != QVariant()) {
+        QString s = set.value(TIME_KEY).toString();
+        time = QTime::fromString(s, "hh:mm:ss");
+    } else {
+        time = QTime(18, 0, 0);
+        QString s = time.toString("hh:mm:ss");
+        set.setValue(TIME_KEY, s);
+    }
+
+    QTime cTime = QTime::currentTime();
+    int second = cTime.secsTo(time);
+    int minute = second/60 + 1;
+
+
+    if (_system_tray->isVisible()) {
+        _system_tray->showMessage(tr("Time"), tr("Minute: %1\nSecond: %2").arg(minute).arg(second));
+    }
 }
 

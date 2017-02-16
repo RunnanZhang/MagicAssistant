@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QDomDocument>
 #include <QRect>
+#include <QApplication>
 
 Settings::Settings(const QString &filePath, QObject *parent) :
     QObject(parent),
@@ -58,7 +59,7 @@ bool Settings::writeXmlFile(const QString &fileName)
     QDomProcessingInstruction instruction = doc.createProcessingInstruction(QString("xml"), instructData);
     doc.appendChild(instruction);
 
-    QDomElement root = doc.createElement("Hisign-Configuration");
+    QDomElement root = doc.createElement("Configuration");
     doc.appendChild(root);
 
     for(auto item = m_map.begin(); item != m_map.end(); ++item)
@@ -86,14 +87,17 @@ bool Settings::writeXmlFile(const QString &fileName)
 
 bool Settings::readXmlFile(const QString &fileName)
 {
+    qInfo() << "Settings file path: " << fileName;
+
     QFile file(fileName);
-    QString errorStr;
     if(!file.open(QIODevice::ReadOnly))
     {
+        qWarning() << "Open file failed. Error is:" << file.errorString();
         return false;
     }
 
     QDomDocument doc;
+    QString errorStr;
     if(!doc.setContent(&file, &errorStr))
     {
         qWarning() << "Set the content of xml failed:" << errorStr;

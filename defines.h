@@ -7,6 +7,7 @@
 #define OPACITY_KEY "Opacity"
 #define GEOMETRY_KEY "Geometry"
 #define SCREENSHOT_KEY "IsCompressed"
+#define TIME_KEY "Time"
 
 #endif // MAGIC_DEFINES
 

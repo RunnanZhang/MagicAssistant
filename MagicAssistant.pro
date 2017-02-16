@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network quick xml
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui network quick xml widgets
 
 TARGET = MagicAssistant
 TEMPLATE = app
@@ -20,14 +18,17 @@ SOURCES += main.cpp\
     toolbar.cpp \
     toolbutton.cpp \
     nbaassistant.cpp \
-    Settings.cpp
+    Settings.cpp \
+    LogHandler.cpp
 
 HEADERS  += magicassistant.h \
     toolbar.h \
     toolbutton.h \
     defines.h \
     nbaassistant.h \
-    Settings.h
+    Settings.h \
+    LogHandler.h \
+    Singleton.h
 
 FORMS    += magicassistant.ui \
     toolbar.ui
