@@ -14,24 +14,26 @@ CONFIG += c++11
 LIBS += User32.lib
 
 SOURCES += main.cpp\
-        magicassistant.cpp \
-    toolbar.cpp \
-    toolbutton.cpp \
-    nbaassistant.cpp \
     Settings.cpp \
-    LogHandler.cpp
+    LogHandler.cpp \
+    MagicAssistant.cpp \
+    NBAAssistant.cpp \
+    ToolBar.cpp \
+    ToolButton.cpp
 
-HEADERS  += magicassistant.h \
-    toolbar.h \
-    toolbutton.h \
+HEADERS  += \
     defines.h \
-    nbaassistant.h \
     Settings.h \
     LogHandler.h \
-    Singleton.h
+    Singleton.h \
+    MagicAssistant.h \
+    NBAAssistant.h \
+    ToolBar.h \
+    ToolButton.h
 
-FORMS    += magicassistant.ui \
-    toolbar.ui
+FORMS    += \
+    ToolBar.ui \
+    MagicAssistant.ui
 
 RESOURCES += \
     resource.qrc

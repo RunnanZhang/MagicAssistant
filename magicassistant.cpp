@@ -1,8 +1,8 @@
-#include "magicassistant.h"
+#include "MagicAssistant.h"
 #include "ui_magicassistant.h"
-#include "toolbar.h"
+#include "ToolBar.h"
 #include "defines.h"
-#include "nbaassistant.h"
+#include "NBAAssistant.h"
 #include "Settings.h"
 
 #include <QPainter>

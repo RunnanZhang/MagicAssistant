@@ -1,4 +1,4 @@
-#include "nbaassistant.h"
+#include "NBAAssistant.h"
 
 NBAAssistant::NBAAssistant(QObject *parent) :
     QObject(parent)

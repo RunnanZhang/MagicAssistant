@@ -1,4 +1,4 @@
-#include "toolbutton.h"
+#include "ToolButton.h"
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>

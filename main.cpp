@@ -1,4 +1,4 @@
-#include "magicassistant.h"
+#include "MagicAssistant.h"
 #include "LogHandler.h"
 
 #include <QDir>
