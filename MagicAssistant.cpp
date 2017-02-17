@@ -1,5 +1,5 @@
 #include "MagicAssistant.h"
-#include "ui_magicassistant.h"
+#include "ui_MagicAssistant.h"
 #include "ToolBar.h"
 #include "defines.h"
 #include "NBAAssistant.h"
