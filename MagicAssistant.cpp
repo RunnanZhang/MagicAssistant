@@ -4,6 +4,7 @@
 #include "defines.h"
 #include "NBAAssistant.h"
 #include "Settings.h"
+#include "InfoBoard.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -299,6 +300,7 @@ bool MagicAssistant::nativeEvent(const QByteArray &eventType, void *message, lon
             }
         }
     }
+
     return false;
 }
 
@@ -523,13 +525,22 @@ void MagicAssistant::showTodayScore()
     NBAAssistant nba;
     nba.getTodayScore();
     QList<TeamScore*> list = nba.getTeamscore();
-    QString showMessage;
+
+    InfoBoard *board = new InfoBoard;
+    board->setAttribute(Qt::WA_DeleteOnClose);
+
     for (auto i = list.begin(); i != list.end(); ++i)
     {
-        showMessage += (*i)->_homeTeam + QString::number((*i)->_homeScore)
-            + " : " + (*i)->_awayTeam + QString::number((*i)->_awayScore);
+        QString str = (*i)->_homeTeam + QChar::Space + QString::number((*i)->_homeScore)
+                + " : " + QString::number((*i)->_awayScore) + QChar::Space + (*i)->_awayTeam;
+
+        board->append(str);
     }
-    _system_tray->showMessage(tr("Information"), showMessage);
+
+    QDesktopWidget *desk = QApplication::desktop();
+    board->show();
+    QRect rect = desk->availableGeometry();
+    board->move(rect.width() - board->width(), rect.height() - board->height());
 }
 
 void MagicAssistant::showRestTime()

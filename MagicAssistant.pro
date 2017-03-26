@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     MagicAssistant.cpp \
     NBAAssistant.cpp \
     ToolBar.cpp \
-    ToolButton.cpp
+    ToolButton.cpp \
+    InfoBoard.cpp
 
 HEADERS  += \
     defines.h \
@@ -29,11 +30,13 @@ HEADERS  += \
     MagicAssistant.h \
     NBAAssistant.h \
     ToolBar.h \
-    ToolButton.h
+    ToolButton.h \
+    InfoBoard.h
 
 FORMS    += \
     ToolBar.ui \
-    MagicAssistant.ui
+    MagicAssistant.ui \
+    InfoBoard.ui
 
 RESOURCES += \
     resource.qrc
