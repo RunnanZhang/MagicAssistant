@@ -18,9 +18,11 @@ public:
     void append(const QString &text);
 
 protected:
-    void enterEvent(QEvent *e);
-    void leaveEvent(QEvent *e);
+    bool eventFilter(QObject *obj, QEvent *event);
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
+
+private slots:
+    void on_okBtn_clicked();
 
 private:
     Ui::InfoBoard *ui;

@@ -562,9 +562,14 @@ void MagicAssistant::showRestTime()
     int second = cTime.secsTo(time);
     int minute = second/60 + 1;
 
+    InfoBoard *board = new InfoBoard;
+    board->setAttribute(Qt::WA_DeleteOnClose);
+    QDesktopWidget *desk = QApplication::desktop();
+    board->show();
+    QRect rect = desk->availableGeometry();
+    board->move(rect.width() - board->width(), rect.height() - board->height());
 
-    if (_system_tray->isVisible()) {
-        _system_tray->showMessage(tr("Time"), tr("Minute: %1\nSecond: %2").arg(minute).arg(second));
-    }
+    board->append(QString("Minute: %1").arg(minute));
+    board->append(QString("Second: %1").arg(second));
 }
 

@@ -1,6 +1,7 @@
 #include "InfoBoard.h"
 #include "ui_InfoBoard.h"
 
+#include <QDesktopServices>
 #include <QPoint>
 #include <QCursor>
 #include <windows.h>
@@ -14,6 +15,9 @@ InfoBoard::InfoBoard(QWidget *parent) :
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
 
     connect(ui->closeBtn, &QToolButton::clicked, this, &QWidget::close);
+    connect(ui->closeBtn2, &QToolButton::clicked, this, &QWidget::close);
+
+    ui->textEdit->installEventFilter(this);
 }
 
 InfoBoard::~InfoBoard()
@@ -26,20 +30,20 @@ void InfoBoard::append(const QString &text)
     ui->textEdit->append(text);
 }
 
-void InfoBoard::enterEvent(QEvent *e)
+bool InfoBoard::eventFilter(QObject *obj, QEvent *event)
 {
-    ui->textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    if(event->type() == QEvent::Enter)
+    {
+        ui->textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    }
+    else if(event->type() == QEvent::Leave)
+    {
+        ui->textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
 
-    QWidget::enterEvent(e);
-}
-
-void InfoBoard::leaveEvent(QEvent *e)
-{
-    ui->textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    QWidget::leaveEvent(e);
+    return QWidget::eventFilter(obj, event);
 }
 
 bool InfoBoard::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -61,5 +65,11 @@ bool InfoBoard::nativeEvent(const QByteArray &eventType, void *message, long *re
         }
     }
 
-    return false;
+    return QWidget::nativeEvent(eventType, message, result);
+}
+
+void InfoBoard::on_okBtn_clicked()
+{
+    QString link = "http://nba.hupu.com";
+    QDesktopServices::openUrl(QUrl(link));
 }

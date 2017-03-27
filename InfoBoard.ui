@@ -14,12 +14,16 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget {
+   <string notr="true">QWidget{
 background: white;
 }
 
 QWidget#titleBar {
-background: #009fee;
+background: #0078b4;
+}
+
+QLabel#label {
+background: #0078b4;
 }
 
 QTextEdit {
@@ -27,21 +31,28 @@ border: none;
 }
 
 QToolButton {
+border:none;
+background: #0078b4;
+}
+QToolButton#closeBtn:hover {
 border: none;
 background-color: #009fee;
 }
-
-QToolButton:hover {
+QToolButton#titleBtn:pressed {
 border: none;
-background-color: lightBlue;
+background-color: #0078b4;
 }
 
 QPushButton {
-border: 1px solid #009fee;
+border: 1px solid #0078b4;
 border-radius: 6px;
-background-color: #009fee;
+background-color: #0078b4;
 color: white;
 min-width: 
+}
+QPushButton:hover {
+border: none;
+background-color: #009fee;
 }
 
 QScrollBar:vertical {
@@ -112,6 +123,49 @@ QScrollBar::sub-line:horizontal, QScrollBar::add-line:horizontal {
        <number>0</number>
       </property>
       <item>
+       <widget class="QToolButton" name="titleBtn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/images/james.png</normaloff>
+          <disabledoff>:/images/james.png</disabledoff>:/images/james.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>信息板</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -158,6 +212,12 @@ QScrollBar::sub-line:horizontal, QScrollBar::add-line:horizontal {
    </item>
    <item>
     <widget class="QTextEdit" name="textEdit">
+     <property name="font">
+      <font>
+       <family>微软雅黑</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="verticalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
@@ -168,8 +228,8 @@ QScrollBar::sub-line:horizontal, QScrollBar::add-line:horizontal {
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'微软雅黑'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'SimSun'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
@@ -189,13 +249,13 @@ p, li { white-space: pre-wrap; }
       <number>9</number>
      </property>
      <property name="topMargin">
-      <number>9</number>
+      <number>6</number>
      </property>
      <property name="rightMargin">
       <number>9</number>
      </property>
      <property name="bottomMargin">
-      <number>9</number>
+      <number>6</number>
      </property>
      <item>
       <spacer name="horizontalSpacer">
@@ -211,7 +271,7 @@ p, li { white-space: pre-wrap; }
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="okBtn">
        <property name="minimumSize">
         <size>
          <width>108</width>
@@ -230,7 +290,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="closeBtn2">
        <property name="minimumSize">
         <size>
          <width>108</width>
