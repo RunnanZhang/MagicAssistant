@@ -24,11 +24,13 @@ void NBAAssistant::setTeamScore(const QList<TeamScore*>& teamscore)
 
 void NBAAssistant::getTodayScore()
 {
-    QUrl url = "http://nba.hupu.com/";
     QEventLoop loop;
 
     QNetworkAccessManager manager;
-    QNetworkReply *reply = manager.get(QNetworkRequest(url));
+	QNetworkRequest request;
+	request.setUrl(QUrl("https://nba.hupu.com/"));
+	//request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    QNetworkReply *reply = manager.get(request);
 
     ///< 用事件循环就是为了在一个函数中完成处理操作，当然可以不用事件循环阻塞，将处理解析reply的代码，放到连接finished信号的槽函数中即可.
     //请求结束并下载完成后，退出子事件循环.
@@ -37,6 +39,7 @@ void NBAAssistant::getTodayScore()
     loop.exec();
 
     // 当finished信号发出，事件循环结束，此时网页源码已下载完毕，可以开始解析.
+	QByteArray array = reply->readAll();
     QString source = QString::fromLocal8Bit(reply->readAll());
     analyzeCode(source);
 }

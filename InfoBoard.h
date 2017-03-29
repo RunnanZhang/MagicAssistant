@@ -17,6 +17,8 @@ public:
 
     void append(const QString &text);
 
+    void setFilterText(const QStringList &filter, const QColor &color);
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
@@ -26,6 +28,10 @@ private slots:
 
 private:
     Ui::InfoBoard *ui;
+
+    QStringList _filterList;
+
+    QColor _color;
 };
 
 #endif // INFOBOARD_H

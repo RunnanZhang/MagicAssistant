@@ -529,10 +529,17 @@ void MagicAssistant::showTodayScore()
     InfoBoard *board = new InfoBoard;
     board->setAttribute(Qt::WA_DeleteOnClose);
 
+    QStringList filterList;
+    filterList << "骑士" << "湖人" << "勇士" << "火箭";
+    board->setFilterText(filterList, Qt::red);
+
     for (auto i = list.begin(); i != list.end(); ++i)
     {
-        QString str = (*i)->_homeTeam + QChar::Space + QString::number((*i)->_homeScore)
-                + " : " + QString::number((*i)->_awayScore) + QChar::Space + (*i)->_awayTeam;
+        QString str = (*i)->_homeTeam + QChar::Space;
+        str += QString::number((*i)->_homeScore);
+        str += " : ";
+        str += QString::number((*i)->_awayScore) + QChar::Space;
+        str += (*i)->_awayTeam;
 
         board->append(str);
     }
@@ -540,7 +547,7 @@ void MagicAssistant::showTodayScore()
     QDesktopWidget *desk = QApplication::desktop();
     board->show();
     QRect rect = desk->availableGeometry();
-    board->move(rect.width() - board->width(), rect.height() - board->height());
+    board->move(rect.width() - board->width() - 32, rect.height() - board->height());
 }
 
 void MagicAssistant::showRestTime()
@@ -567,7 +574,7 @@ void MagicAssistant::showRestTime()
     QDesktopWidget *desk = QApplication::desktop();
     board->show();
     QRect rect = desk->availableGeometry();
-    board->move(rect.width() - board->width(), rect.height() - board->height());
+    board->move(rect.width() - board->width() - 32, rect.height() - board->height());
 
     board->append(QString("Minute: %1").arg(minute));
     board->append(QString("Second: %1").arg(second));

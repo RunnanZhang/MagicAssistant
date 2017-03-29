@@ -27,6 +27,17 @@ InfoBoard::~InfoBoard()
 
 void InfoBoard::append(const QString &text)
 {
+    ui->textEdit->setTextColor(Qt::black);
+
+    for(auto str : _filterList)
+    {
+        if(text.contains(str))
+        {
+            ui->textEdit->setTextColor(_color);
+            break;
+        }
+    }
+
     ui->textEdit->append(text);
 }
 
@@ -72,4 +83,10 @@ void InfoBoard::on_okBtn_clicked()
 {
     QString link = "http://nba.hupu.com";
     QDesktopServices::openUrl(QUrl(link));
+}
+
+void InfoBoard::setFilterText(const QStringList &filter, const QColor &color)
+{
+    _filterList = filter;
+    _color = color;
 }
