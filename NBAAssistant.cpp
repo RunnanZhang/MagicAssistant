@@ -28,8 +28,9 @@ void NBAAssistant::getTodayScore()
 
     QNetworkAccessManager manager;
 	QNetworkRequest request;
-	request.setUrl(QUrl("https://nba.hupu.com/"));
-	//request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+	request.setUrl(QUrl("http://nba.hupu.com/"));
+	// 由于虎扑已经升级为https，所以可以直接将URL改为https，也可以加如下属性，可重定向为https.
+	request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     QNetworkReply *reply = manager.get(request);
 
     ///< 用事件循环就是为了在一个函数中完成处理操作，当然可以不用事件循环阻塞，将处理解析reply的代码，放到连接finished信号的槽函数中即可.
@@ -39,7 +40,6 @@ void NBAAssistant::getTodayScore()
     loop.exec();
 
     // 当finished信号发出，事件循环结束，此时网页源码已下载完毕，可以开始解析.
-	QByteArray array = reply->readAll();
     QString source = QString::fromLocal8Bit(reply->readAll());
     analyzeCode(source);
 }
