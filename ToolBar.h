@@ -24,7 +24,7 @@ signals:
     void showRequested();
 
     ///< ToolButton功能信号，实现在主窗口中实现.
-    void updateMetaDataRequested();
+    void updateRequested();
     void vsbuildRequested();
     void openCommandRequested();
     void openProjectDirRequested();

@@ -31,7 +31,7 @@ ToolBar::~ToolBar()
 
 void ToolBar::on_toolButton_clicked()
 {
-    emit updateMetaDataRequested();
+    emit updateRequested();
 }
 
 void ToolBar::on_toolButton2_clicked()

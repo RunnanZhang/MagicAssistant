@@ -65,6 +65,9 @@ private slots:
     ///< \note 定时关机.
     void shutdown();
 
+    ///< \note 点击更新按钮.
+    void execUpdate();
+
 private:
     ///< \note 初始化托盘相关.
     void initTray();

