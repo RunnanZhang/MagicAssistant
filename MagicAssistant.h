@@ -11,6 +11,7 @@ class MagicAssistant;
 
 class ToolBar;
 class QSystemTrayIcon;
+class InfoBoard;
 
 class MagicAssistant : public QWidget
 {
@@ -125,6 +126,9 @@ private:
 
     /// @brief quint32 vk id. QString 此快捷键要执行程序的名字.
     QMap<quint32, QString> _hotkey;
+
+    /// @brief 记分牌.
+    InfoBoard *_board;
 };
 
 #endif // MAGICASSISTANT_H

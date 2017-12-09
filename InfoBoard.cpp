@@ -18,6 +18,8 @@ InfoBoard::InfoBoard(QWidget *parent) :
     connect(ui->closeBtn2, &QToolButton::clicked, this, &QWidget::close);
 
     ui->textEdit->installEventFilter(this);
+
+    _html = ui->textEdit->toHtml();
 }
 
 InfoBoard::~InfoBoard()
@@ -39,6 +41,13 @@ void InfoBoard::append(const QString &text)
     }
 
     ui->textEdit->append(text);
+}
+
+void InfoBoard::clear()
+{
+    ui->textEdit->clear();
+    ui->textEdit->setHtml(_html);
+    _filterList.clear();
 }
 
 bool InfoBoard::eventFilter(QObject *obj, QEvent *event)

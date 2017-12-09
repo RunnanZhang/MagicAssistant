@@ -15,7 +15,6 @@
 #include <QDir>
 #include <QActionGroup>
 #include <QDesktopWidget>
-#include <QTimer>
 #include <QDebug>
 #include <QProcess>
 #include <QInputDialog>
@@ -58,7 +57,8 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 MagicAssistant::MagicAssistant(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MagicAssistant)
+    ui(new Ui::MagicAssistant),
+    _board(new InfoBoard)
 {
     ui->setupUi(this);
 
@@ -78,9 +78,9 @@ MagicAssistant::MagicAssistant(QWidget *parent) :
 
     initGeometry();
 
-    initTray();
-
     initMenu();
+
+    initTray();
 
     initHotKey();
 
@@ -135,12 +135,7 @@ void MagicAssistant::initTray()
     _system_tray = new QSystemTrayIcon(this);
     QObject::connect(_system_tray, &QSystemTrayIcon::activated, this, &MagicAssistant::trayActivated);
 
-    QMenu *trayMenu = new QMenu(this);
-    trayMenu->addAction(tr("&Show"), this, SLOT(showNormal()));
-    trayMenu->addSeparator();
-    trayMenu->addAction(tr("&Quit"), qApp, SLOT(quit()));
-
-    _system_tray->setContextMenu(trayMenu);
+    _system_tray->setContextMenu(_menu);
     QIcon icon(":/images/james_16.ico");
     _system_tray->setIcon(icon);
     _system_tray->setToolTip("Magic Assistant");
@@ -456,6 +451,9 @@ void MagicAssistant::initMenu()
     connect(action, &QAction::triggered, this, [=] () {setOpacity(0.5);});
     ///<End
 
+    ///< 查看NBA当前比赛比分.
+    _menu->addAction(tr("NBA Real-time score"), this, SLOT(showTodayScore()));
+
     ///< 打开程序所在位置.
     _menu->addAction(tr("Open in Explorer"), this, SLOT(openInExplorer()));
 
@@ -468,10 +466,9 @@ void MagicAssistant::initMenu()
     _is_compressed = set.value(SCREENSHOT_KEY, true).toBool();
     screenshotAction->setChecked(_is_compressed);
 
-    ///< 隐藏窗体.
+    ///< 退出.
     _menu->addSeparator();
-    QAction *hideAction = _menu->addAction(tr("&Hide to System Tray"));
-    connect(hideAction, &QAction::triggered, this, [=] () {hideAll();});
+    _menu->addAction(tr("&Quit"), qApp, SLOT(quit()));
 }
 
 void MagicAssistant::execProcess(QString filename)
@@ -565,12 +562,10 @@ void MagicAssistant::showTodayScore()
     nba.getTodayScore();
     QList<TeamScore*> list = nba.getTeamscore();
 
-    InfoBoard *board = new InfoBoard;
-    board->setAttribute(Qt::WA_DeleteOnClose);
-
+    _board->clear();
     QStringList filterList;
-    filterList << "骑士" << "湖人" << "勇士" << "火箭";
-    board->setFilterText(filterList, Qt::red);
+    filterList << "骑士" << "湖人" << "勇士" << "火箭" << "凯尔特人";
+    _board->setFilterText(filterList, Qt::red);
 
     for (auto i = list.begin(); i != list.end(); ++i)
     {
@@ -582,13 +577,13 @@ void MagicAssistant::showTodayScore()
 		str += " ";
 		str += (*i)->_state;
 
-        board->append(str);
+        _board->append(str);
     }
 
     QDesktopWidget *desk = QApplication::desktop();
-    board->show();
+    _board->show();
     QRect rect = desk->availableGeometry();
-    board->move(rect.width() - board->width() - 32, rect.height() - board->height());
+    _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
 }
 
 void MagicAssistant::showRestTime()
@@ -610,14 +605,13 @@ void MagicAssistant::showRestTime()
     int second = cTime.secsTo(time);
     int minute = second/60 + 1;
 
-    InfoBoard *board = new InfoBoard;
-    board->setAttribute(Qt::WA_DeleteOnClose);
+    _board->clear();
     QDesktopWidget *desk = QApplication::desktop();
-    board->show();
+    _board->show();
     QRect rect = desk->availableGeometry();
-    board->move(rect.width() - board->width() - 32, rect.height() - board->height());
+    _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
 
-    board->append(QString("Minute: %1").arg(minute));
-    board->append(QString("Second: %1").arg(second));
+    _board->append(QString("Minute: %1").arg(minute));
+    _board->append(QString("Second: %1").arg(second));
 }
 
