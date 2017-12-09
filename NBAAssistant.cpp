@@ -8,7 +8,7 @@ NBAAssistant::NBAAssistant(QObject *parent) :
 
 NBAAssistant::~NBAAssistant()
 {
-
+    qDeleteAll(_TeamScore);
 }
 
 QList<TeamScore*> NBAAssistant::getTeamscore() const
@@ -28,7 +28,7 @@ void NBAAssistant::getTodayScore()
 
     QNetworkAccessManager manager;
 	QNetworkRequest request;
-	request.setUrl(QUrl("http://nba.hupu.com/"));
+    request.setUrl(QUrl("http://nba.hupu.com/games"));
 	// 由于虎扑已经升级为https，所以可以直接将URL改为https，也可以加如下属性，可重定向为https.
 	request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     QNetworkReply *reply = manager.get(request);
@@ -40,54 +40,92 @@ void NBAAssistant::getTodayScore()
     loop.exec();
 
     // 当finished信号发出，事件循环结束，此时网页源码已下载完毕，可以开始解析.
-    QString source = QString::fromLocal8Bit(reply->readAll());
+    QString source = QString(reply->readAll());
     analyzeCode(source);
 }
 
 void NBAAssistant::analyzeCode(QString source)
 {
-    int nCPos = source.indexOf("<span class=\"nameText\">");
+    int nCPos = source.indexOf("<div class=\"gamecenter_content\">");
     while(nCPos != -1)
     {
         TeamScore *data = new TeamScore;
         source = source.mid(nCPos);
-        nCPos = source.indexOf("title");
+        nCPos = source.indexOf("<div class=\"txt\">");
         source = source.mid(nCPos);
-        data->_homeTeam = source.section('\"', 1, 1);
-
-        nCPos = source.indexOf("<span class=\"bifen\">");
+        nCPos = source.indexOf("<span");
         source = source.mid(nCPos);
-        // 若比赛未开始，那么bifen下面没有title一栏.
-        nCPos = source.indexOf("title");
-        int nTemp = source.indexOf("<span class=\"nameText\">");
 
-        if(nCPos < nTemp)
+        // 若比赛未开始，下面没有class="num一栏.
+        nCPos = source.indexOf("<span class=\"num");
+        int nTemp = source.indexOf("<div class=\"txt\">");
+        bool isStarted = nCPos < nTemp && nCPos >= 0;
+
+        if(isStarted)
         {
+            // away team score
             source = source.mid(nCPos);
             nCPos = source.indexOf(">") + 1;
             source = source.mid(nCPos);
             nCPos = source.indexOf("<");
             QString score = source.left(nCPos);
-            QStringList scoreList = score.split(":");
-            data->_homeScore = scoreList[0].toUInt();
-            data->_awayScore = scoreList[1].toUInt();
+            data->_awayScore = score.toUInt();
+        }
+        else
+        {
+            data->_awayScore = 0;
+        }
+
+
+        // away team name
+        source = source.mid(nCPos);
+        nCPos = source.indexOf("\">") + 2;
+        source = source.mid(nCPos);
+        nCPos = source.indexOf("<");
+        data->_awayTeam = source.left(nCPos);
+
+        nCPos = source.indexOf("<div class=\"txt\">");
+        source = source.mid(nCPos);
+        nCPos = source.indexOf("<span");
+
+        if(isStarted)
+        {
+            // home team score
+            source = source.mid(nCPos);
+            nCPos = source.indexOf(">") + 1;
+            source = source.mid(nCPos);
+            nCPos = source.indexOf("<");
+            QString score = source.left(nCPos);
+            data->_homeScore = score.toUInt();
         }
         else
         {
             data->_homeScore = 0;
-            data->_awayScore = 0;
         }
 
-        nCPos = source.indexOf("<span class=\"nameText\">");
+        // away team name
         source = source.mid(nCPos);
-        nCPos = source.indexOf("title");
+        nCPos = source.indexOf("\">") + 2;
         source = source.mid(nCPos);
-        data->_awayTeam = source.section('\"', 1, 1);
+        nCPos = source.indexOf("<");
+        data->_homeTeam = source.left(nCPos);
+
+		// game state
+		nCPos = source.indexOf("<span class=\"b\">");
+		source = source.mid(nCPos);
+		nCPos = source.indexOf("\">") + 3;
+		source = source.mid(nCPos);
+		nCPos = source.indexOf("</span");
+		QString state = source.left(nCPos);
+		state.replace("<p>", " ");
+		state.replace("</p>", "");
+		state.remove(QChar::LineFeed);
+		data->_state = state;
 
         _TeamScore << data;
 
         //查找下一组.
-        nCPos = source.indexOf("<span class=\"nameText\">");
+        nCPos = source.indexOf("<div class=\"txt\">");
     }
 }
 

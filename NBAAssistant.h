@@ -29,6 +29,7 @@ public:
     QString _awayTeam;
     quint16 _homeScore;
     quint16 _awayScore;
+	QString _state;
 };
 
 class NBAAssistant : public QObject

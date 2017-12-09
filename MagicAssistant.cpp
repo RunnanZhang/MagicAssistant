@@ -579,6 +579,8 @@ void MagicAssistant::showTodayScore()
         str += " : ";
         str += QString::number((*i)->_awayScore) + QChar::Space;
         str += (*i)->_awayTeam;
+		str += " ";
+		str += (*i)->_state;
 
         board->append(str);
     }
