@@ -10,8 +10,11 @@ class Settings : public QObject
     Q_OBJECT
 
 public:
+    Settings(QObject *parent = Q_NULLPTR);
     Settings(const QString &filePath, QObject *parent = Q_NULLPTR);
     ~Settings();
+
+    bool setContent(const QString &content);
 
     void setValue(const QString &key, const QVariant &value);
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;

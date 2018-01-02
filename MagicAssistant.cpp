@@ -107,6 +107,38 @@ MagicAssistant::~MagicAssistant()
     }
 }
 
+void MagicAssistant::checkUpdate()
+{
+    QNetworkRequest request;
+    request.setUrl(QUrl("http://qt90.com/MagicAssistant/update/version.xml"));
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+
+    QNetworkReply *reply = _networdManager.get(request);
+    QObject::connect(reply, &QNetworkReply::finished, this, [=]()->void
+    {
+        Settings set;
+        set.setContent(QString::fromUtf8(reply->readAll()));
+        QString version = set.value("version").toString();
+
+        Settings setLocale("./version.xml");
+        QString versionLocale = setLocale.value("version").toString();
+
+        // 版本号不同，则提示更新.
+        if(version != versionLocale)
+        {
+            QString updateInfo = set.value("updateInfo").toString();
+            QStringList argList;
+            argList << updateInfo;
+            argList << "http://qt90.com/MagicAssistant/update/MagicAssistant.exe";
+
+            QProcess::startDetached("Update.exe", argList);
+            qApp->quit();
+        }
+
+        reply->deleteLater();
+    });
+}
+
 void MagicAssistant::initGeometry()
 {
     QRect desktop = QApplication::desktop()->geometry();

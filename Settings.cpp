@@ -9,6 +9,11 @@
 #include <QRect>
 #include <QApplication>
 
+Settings::Settings(QObject *parent) : QObject(parent)
+{
+
+}
+
 Settings::Settings(const QString &filePath, QObject *parent) :
     QObject(parent),
     m_isWrite(false)
@@ -105,6 +110,33 @@ bool Settings::readXmlFile(const QString &fileName)
         return false;
     }
     file.close();
+
+    QDomElement docElem = doc.documentElement();
+    QDomNode node = docElem.firstChild();
+    while(!node.isNull())
+    {
+        QDomElement e = node.toElement(); // try to convert the node to an element.
+        if(!e.isNull())
+        {
+            QString key = e.tagName();
+            QVariant value = stringToVariant(e.attribute("value"));
+            m_map.insertMulti(key, value);
+        }
+        node = node.nextSibling();
+    }
+
+    return true;
+}
+
+bool Settings::setContent(const QString &content)
+{
+    QDomDocument doc;
+    QString errorStr;
+    if(!doc.setContent(content, &errorStr))
+    {
+        qWarning() << "Set the content of xml failed:" << errorStr;
+        return false;
+    }
 
     QDomElement docElem = doc.documentElement();
     QDomNode node = docElem.firstChild();

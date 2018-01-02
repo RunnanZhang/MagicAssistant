@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QSystemTrayIcon>
 #include <QMap>
+#include <QNetworkAccessManager>
 
 namespace Ui {
 class MagicAssistant;
@@ -66,8 +67,11 @@ private slots:
     ///< \note 定时关机.
     void shutdown();
 
-    ///< \note 点击更新按钮.
+    ///< \note 点击更新按钮.目前是输出当前所有键盘信息功能.
     void execUpdate();
+
+    ///< \note 检查更新程序.
+    void checkUpdate();
 
 private:
     ///< \note 初始化托盘相关.
@@ -129,6 +133,8 @@ private:
 
     /// @brief 记分牌.
     InfoBoard *_board;
+
+    QNetworkAccessManager _networdManager;
 };
 
 #endif // MAGICASSISTANT_H
