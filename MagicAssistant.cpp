@@ -88,6 +88,9 @@ MagicAssistant::MagicAssistant(QWidget *parent) :
 
     // 设置键盘全局监听.
     myhook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
+
+    // 执行检查更新.
+    checkUpdate();
 }
 
 MagicAssistant::~MagicAssistant()
@@ -130,8 +133,7 @@ void MagicAssistant::checkUpdate()
             QStringList argList;
             argList << updateInfo;
             argList << "http://qt90.com/MagicAssistant/update/MagicAssistant.exe";
-
-            QProcess::startDetached("Update.exe", argList);
+            QProcess::startDetached("Updater.exe", argList);
             qApp->quit();
         }
 
