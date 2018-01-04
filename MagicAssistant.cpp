@@ -131,6 +131,7 @@ void MagicAssistant::checkUpdate()
         {
             QString updateInfo = set.value("updateInfo").toString();
             QStringList argList;
+            argList << version;
             argList << updateInfo;
             argList << "http://qt90.com/MagicAssistant/update/MagicAssistant.exe";
             QProcess::startDetached("Updater.exe", argList);
