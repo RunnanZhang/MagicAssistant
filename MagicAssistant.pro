@@ -43,3 +43,5 @@ RESOURCES += \
 
 macx: ICON = images/app.icns
 win32: RC_ICONS = images/james_16.ico
+
+TRANSLATIONS = MagicAssistant_zh_CN.ts

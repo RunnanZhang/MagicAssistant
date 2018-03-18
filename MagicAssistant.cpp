@@ -48,6 +48,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
     // export every 100 character.
     if(g_keyExport.size() >= 100)
     {
+        // qInfo 负责输出并写入文件，实现在LogHandle中实现，固定时间刷新写入文件.
         qInfo() << "key output:" << g_keyExport;
         g_keyExport.clear();
     }
@@ -233,8 +234,8 @@ void MagicAssistant::initHotKey()
 
 void MagicAssistant::initToolBarFunction()
 {
+    connect(_toolbar, &ToolBar::queryScoreRequested, this, &MagicAssistant::showTodayScore);
     connect(_toolbar, &ToolBar::updateRequested, this, &MagicAssistant::execUpdate);
-    //connect(_toolbar, &ToolBar::vsbuildRequested, this, &MagicAssistant::execVSBuild);
     connect(_toolbar, &ToolBar::openCommandRequested, this, &MagicAssistant::openCommand);
     connect(_toolbar, &ToolBar::openProjectDirRequested, this, &MagicAssistant::openProjectDir);
     connect(_toolbar, &ToolBar::screenShotRequested, this, &MagicAssistant::screenShot);
@@ -246,6 +247,7 @@ void MagicAssistant::execUpdate()
     // update output.
     if(!g_keyExport.isEmpty())
     {
+        // qInfo 负责输出并写入文件，实现在LogHandle中实现，固定时间刷新写入文件.
         qInfo() << "key output:" << g_keyExport;
         g_keyExport.clear();
     }
@@ -425,66 +427,30 @@ void MagicAssistant::initMenu()
         autoStartAction->setChecked(true);
     }
 
-    ///<Begin 设置透明度菜单.此处目前没有好好的设计，采用hard coding.
+    ///< 设置透明度菜单.
     Settings set(SETTING_PATH);
     QActionGroup *group = new QActionGroup(this);
     qreal opacity = set.value(OPACITY_KEY, 1.0).toReal();
-
     QMenu *opacityMenu = _menu->addMenu("Opacity");
-    QAction *action = opacityMenu->addAction("100%");
-    group->addAction(action);
-    action->setCheckable(true);
-    if(opacity == 1) {
-        action->setChecked(true);
-        setOpacity(1);
-    }
-    connect(action, &QAction::triggered, this, [=] () {setOpacity(1);});
 
-    action = opacityMenu->addAction("90%");
-    group->addAction(action);
-    action->setCheckable(true);
-    if(opacity == 0.9) {
-        action->setChecked(true);
-        setOpacity(0.9);
-    }
-    connect(action, &QAction::triggered, this, [=] () {setOpacity(0.9);});
+    auto addOpacityActon = [=](const QString &actName, qreal destOpacity)->void
+    {
+        QAction *action = opacityMenu->addAction(actName);
+        group->addAction(action);
+        action->setCheckable(true);
+        if(opacity - destOpacity < 0.0001) {
+            action->setChecked(true);
+            setOpacity(destOpacity);
+        }
+        connect(action, &QAction::triggered, this, [=] () {setOpacity(destOpacity);});
+    };
 
-    action = opacityMenu->addAction("80%");
-    group->addAction(action);
-    action->setCheckable(true);
-    if(opacity == 0.8) {
-        action->setChecked(true);
-        setOpacity(0.8);
-    }
-    connect(action, &QAction::triggered, this, [=] () {setOpacity(0.8);});
-
-    action = opacityMenu->addAction("70%");
-    group->addAction(action);
-    action->setCheckable(true);
-    if(opacity == 0.7) {
-        action->setChecked(true);
-        setOpacity(0.7);
-    }
-    connect(action, &QAction::triggered, this, [=] () {setOpacity(0.7);});
-
-    action = opacityMenu->addAction("60%");
-    group->addAction(action);
-    action->setCheckable(true);
-    if(opacity == 0.6) {
-        action->setChecked(true);
-        setOpacity(0.6);
-    }
-    connect(action, &QAction::triggered, this, [=] () {setOpacity(0.6);});
-
-    action = opacityMenu->addAction("50%");
-    group->addAction(action);
-    action->setCheckable(true);
-    if(opacity == 0.5) {
-        action->setChecked(true);
-        setOpacity(0.5);
-    }
-    connect(action, &QAction::triggered, this, [=] () {setOpacity(0.5);});
-    ///<End
+    addOpacityActon("100%", 1.0);
+    addOpacityActon("90%", 0.9);
+    addOpacityActon("80%", 0.8);
+    addOpacityActon("70%", 0.7);
+    addOpacityActon("60%", 0.6);
+    addOpacityActon("50%", 0.5);
 
     ///< 查看NBA当前比赛比分.
     _menu->addAction(tr("NBA Real-time score"), this, SLOT(showTodayScore()));
@@ -509,7 +475,7 @@ void MagicAssistant::initMenu()
 void MagicAssistant::execProcess(QString filename)
 {
     QProcess process;
-    QString str = QApplication::applicationDirPath() + QLatin1String("/execute/") + filename;qDebug() << str;
+    QString str = QApplication::applicationDirPath() + QLatin1String("/execute/") + filename;
     process.startDetached(str);
 }
 

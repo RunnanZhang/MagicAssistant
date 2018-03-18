@@ -10,10 +10,10 @@ ToolBar::ToolBar(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
 
     //初始化ToolButton的Pixmap.
+    ui->pQueryScoreBtn->setPixmap(":/images/basketball_32.png", ":/images/basketball_64.png");
+    ui->pQueryScoreBtn->setToolTip("update");
     ui->toolButton->setPixmap(":/images/update_32.png", ":/images/update_64.png");
     ui->toolButton->setToolTip("update");
-    ui->toolButton2->setPixmap(":/images/build_32.png", ":/images/build_64.png");
-    ui->toolButton2->setToolTip("build");
     ui->pOpenBtn->setPixmap(":/images/search_32.png", ":/images/search_64.png");
     ui->pOpenBtn->setToolTip("open");
     ui->pCommandBtn->setPixmap(":/images/command_32.png", ":/images/command_64.png");
@@ -34,9 +34,9 @@ void ToolBar::on_toolButton_clicked()
     emit updateRequested();
 }
 
-void ToolBar::on_toolButton2_clicked()
+void ToolBar::on_pQueryScoreBtn_clicked()
 {
-    emit vsbuildRequested();
+    emit queryScoreRequested();
 }
 
 void ToolBar::on_pOpenBtn_clicked()

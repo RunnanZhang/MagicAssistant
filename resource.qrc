@@ -2,8 +2,6 @@
     <qresource prefix="/">
         <file>images/james.png</file>
         <file>images/james_16.ico</file>
-        <file>images/build_32.png</file>
-        <file>images/build_64.png</file>
         <file>images/command_32.png</file>
         <file>images/command_64.png</file>
         <file>images/open_32.png</file>
@@ -19,5 +17,7 @@
         <file>images/app.icns</file>
         <file>ScoreBoard.qml</file>
         <file>images/close.png</file>
+        <file>images/basketball_32.png</file>
+        <file>images/basketball_64.png</file>
     </qresource>
 </RCC>

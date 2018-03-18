@@ -25,7 +25,7 @@ signals:
 
     ///< ToolButton功能信号，实现在主窗口中实现.
     void updateRequested();
-    void vsbuildRequested();
+    void queryScoreRequested();
     void openCommandRequested();
     void openProjectDirRequested();
     void screenShotRequested();
@@ -33,7 +33,7 @@ signals:
 
 private slots:
     void on_toolButton_clicked();
-    void on_toolButton2_clicked();
+    void on_pQueryScoreBtn_clicked();
     void on_pOpenBtn_clicked();
 
     ///< \note 打开Command.
