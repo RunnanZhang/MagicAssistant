@@ -174,7 +174,7 @@ void MagicAssistant::initTray()
     _system_tray->setContextMenu(_menu);
     QIcon icon(":/images/james_16.ico");
     _system_tray->setIcon(icon);
-    _system_tray->setToolTip("Magic Assistant");
+    _system_tray->setToolTip(tr("Magic Assistant"));
     _system_tray->show();
 
 	// 先屏蔽启动弹窗功能.每次启动弹窗太烦人.
@@ -227,7 +227,7 @@ void MagicAssistant::initHotKey()
             _hotkey.insert(id, set.value(hotkey).toString());
             id++;
         } else {
-            QMessageBox::warning(this, "warning", QString("Register hotkey %1 failed").arg(hotkey));
+            QMessageBox::warning(this, tr("warning"), tr("Register hotkey %1 failed").arg(hotkey));
         }
     }
 }
@@ -431,7 +431,7 @@ void MagicAssistant::initMenu()
     Settings set(SETTING_PATH);
     QActionGroup *group = new QActionGroup(this);
     qreal opacity = set.value(OPACITY_KEY, 1.0).toReal();
-    QMenu *opacityMenu = _menu->addMenu("Opacity");
+    QMenu *opacityMenu = _menu->addMenu(tr("Opacity"));
 
     auto addOpacityActon = [=](const QString &actName, qreal destOpacity)->void
     {
@@ -445,12 +445,12 @@ void MagicAssistant::initMenu()
         connect(action, &QAction::triggered, this, [=] () {setOpacity(destOpacity);});
     };
 
-    addOpacityActon("100%", 1.0);
-    addOpacityActon("90%", 0.9);
-    addOpacityActon("80%", 0.8);
-    addOpacityActon("70%", 0.7);
-    addOpacityActon("60%", 0.6);
-    addOpacityActon("50%", 0.5);
+    addOpacityActon(tr("100%"), 1.0);
+    addOpacityActon(tr("90%"), 0.9);
+    addOpacityActon(tr("80%"), 0.8);
+    addOpacityActon(tr("70%"), 0.7);
+    addOpacityActon(tr("60%"), 0.6);
+    addOpacityActon(tr("50%"), 0.5);
 
     ///< 查看NBA当前比赛比分.
     _menu->addAction(tr("NBA Real-time score"), this, SLOT(showTodayScore()));
@@ -612,7 +612,7 @@ void MagicAssistant::showRestTime()
     QRect rect = desk->availableGeometry();
     _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
 
-    _board->append(QString("Minute: %1").arg(minute));
-    _board->append(QString("Second: %1").arg(second));
+    _board->append(tr("Minute: %1").arg(minute));
+    _board->append(tr("Second: %1").arg(second));
 }
 

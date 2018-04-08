@@ -11,17 +11,17 @@ ToolBar::ToolBar(QWidget *parent) :
 
     //初始化ToolButton的Pixmap.
     ui->pQueryScoreBtn->setPixmap(":/images/basketball_32.png", ":/images/basketball_64.png");
-    ui->pQueryScoreBtn->setToolTip("update");
+    ui->pQueryScoreBtn->setToolTip(tr("update"));
     ui->toolButton->setPixmap(":/images/update_32.png", ":/images/update_64.png");
-    ui->toolButton->setToolTip("update");
+    ui->toolButton->setToolTip(tr("update"));
     ui->pOpenBtn->setPixmap(":/images/search_32.png", ":/images/search_64.png");
-    ui->pOpenBtn->setToolTip("open");
+    ui->pOpenBtn->setToolTip(tr("open"));
     ui->pCommandBtn->setPixmap(":/images/command_32.png", ":/images/command_64.png");
-    ui->pCommandBtn->setToolTip("command");
+    ui->pCommandBtn->setToolTip(tr("command"));
     ui->pScreenshotBtn->setPixmap(":/images/screenshot_32.png", ":/images/screenshot_64.png");
-    ui->pScreenshotBtn->setToolTip("screenshot");
+    ui->pScreenshotBtn->setToolTip(tr("screenshot"));
     ui->pShutdownBtn->setPixmap(":/images/shutdown_32.png", ":/images/shutdown_64.png");
-    ui->pShutdownBtn->setToolTip("shutdown");
+    ui->pShutdownBtn->setToolTip(tr("shutdown"));
 }
 
 ToolBar::~ToolBar()
