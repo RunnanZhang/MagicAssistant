@@ -3,7 +3,7 @@
 NBAAssistant::NBAAssistant(QObject *parent) :
     QObject(parent)
 {
-    qRegisterMetaType<QList<TeamScore*>>("TeamScore");
+qRegisterMetaType<QList<TeamScore*>>("TeamScore");
 }
 
 NBAAssistant::~NBAAssistant()
@@ -11,18 +11,7 @@ NBAAssistant::~NBAAssistant()
     qDeleteAll(_TeamScore);
 }
 
-QList<TeamScore*> NBAAssistant::getTeamscore() const
-{
-    return _TeamScore;
-}
-
-void NBAAssistant::setTeamScore(const QList<TeamScore*>& teamscore)
-{
-    _TeamScore = teamscore;
-    emit teamscoreChanged(teamscore);
-}
-
-void NBAAssistant::getTodayScore()
+QList<TeamScore*> NBAAssistant::getTodayScore()
 {
     QEventLoop loop;
 
@@ -42,6 +31,8 @@ void NBAAssistant::getTodayScore()
     // 当finished信号发出，事件循环结束，此时网页源码已下载完毕，可以开始解析.
     QString source = QString(reply->readAll());
     analyzeCode(source);
+
+    return _TeamScore;
 }
 
 void NBAAssistant::analyzeCode(QString source)

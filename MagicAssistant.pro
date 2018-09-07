@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network quick xml widgets
+QT       += core gui network quick xml widgets quickwidgets
 
 TARGET = MagicAssistant
 TEMPLATE = app

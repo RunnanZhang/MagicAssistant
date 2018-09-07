@@ -16,6 +16,7 @@ class TeamScore : public QObject
     Q_PROPERTY(QString awayTeam READ getAwayTeam)
     Q_PROPERTY(quint16 homeScore READ getHomeScore)
     Q_PROPERTY(quint16 awayScore READ getAwayScore)
+    Q_PROPERTY(QString state READ getState)
 
 public:
     TeamScore(QObject *parent = 0) : QObject(parent) {}
@@ -23,6 +24,7 @@ public:
     QString getAwayTeam() const {return _awayTeam;}
     quint16 getHomeScore() const {return _homeScore;}
     quint16 getAwayScore() const {return _awayScore;}
+    QString getState() const {return _state;}
 
 public:
     QString _homeTeam;
@@ -36,20 +38,11 @@ class NBAAssistant : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QList<TeamScore*> teamscore READ getTeamscore WRITE setTeamScore NOTIFY teamscoreChanged)
-
-
 public:
     NBAAssistant(QObject *parent = 0);
     ~NBAAssistant();
 
-    void getTodayScore();
-
-    QList<TeamScore*> getTeamscore() const;
-    void setTeamScore(const QList<TeamScore*>& teamscore);
-
-signals:
-    void teamscoreChanged(const QList<TeamScore*>&);
+    QList<TeamScore*> getTodayScore();
 
 private:
     void analyzeCode(QString source);

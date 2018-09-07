@@ -24,6 +24,7 @@
 #include <QTime>
 
 #include <QQuickView>
+#include <QQuickWidget>
 #include <QQmlEngine>
 #include <QQmlContext>
 
@@ -549,42 +550,46 @@ void MagicAssistant::shutdown()
 
 void MagicAssistant::showTodayScore()
 {
-//    qmlRegisterType<TeamScore>("CustomComponents", 1, 0, "TeamScore");
-//    QQmlEngine engine;
 //    NBAAssistant nbaobj;
-//    nbaobj.getTodayScore();
-//    engine.rootContext()->setContextProperty("nbaobj", &nbaobj);
-//    QQuickView *view = new QQuickView(&engine, NULL);
-//    //view->setFlags(Qt::FramelessWindowHint);
+//    QList<TeamScore*> list = nbaobj.getTodayScore();
+//    QList<QObject*> objList;
+//    for(auto i : list) objList << i;
+
+//    QQuickWidget *view = new QQuickWidget;
+//    QQmlContext *ctxt = view->rootContext();
+//    ctxt->setContextProperty("nbaobj", QVariant::fromValue(objList));
 //    view->setSource(QUrl("qrc:/ScoreBoard.qml"));
 //    view->show();
 
-    NBAAssistant nba;
-    nba.getTodayScore();
-    QList<TeamScore*> list = nba.getTeamscore();
+    QWidget * www = new QWidget;
+    www->show();
+    return;
+//    NBAAssistant nba;
+//    nba.getTodayScore();
+//    QList<TeamScore*> list = nba.getTeamscore();
 
-    _board->clear();
-    QStringList filterList;
-    filterList << "骑士" << "湖人" << "勇士" << "火箭" << "凯尔特人";
-    _board->setFilterText(filterList, Qt::red);
+//    _board->clear();
+//    QStringList filterList;
+//    filterList << "骑士" << "湖人" << "勇士" << "火箭" << "凯尔特人";
+//    _board->setFilterText(filterList, Qt::red);
 
-    for (auto i = list.begin(); i != list.end(); ++i)
-    {
-        QString str = (*i)->_homeTeam + QChar::Space;
-        str += QString::number((*i)->_homeScore);
-        str += " : ";
-        str += QString::number((*i)->_awayScore) + QChar::Space;
-        str += (*i)->_awayTeam;
-		str += " ";
-		str += (*i)->_state;
+//    for (auto i = list.begin(); i != list.end(); ++i)
+//    {
+//        QString str = (*i)->_homeTeam + QChar::Space;
+//        str += QString::number((*i)->_homeScore);
+//        str += " : ";
+//        str += QString::number((*i)->_awayScore) + QChar::Space;
+//        str += (*i)->_awayTeam;
+//		str += " ";
+//		str += (*i)->_state;
 
-        _board->append(str);
-    }
+//        _board->append(str);
+//    }
 
-    QDesktopWidget *desk = QApplication::desktop();
-    _board->show();
-    QRect rect = desk->availableGeometry();
-    _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
+//    QDesktopWidget *desk = QApplication::desktop();
+//    _board->show();
+//    QRect rect = desk->availableGeometry();
+//    _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
 }
 
 void MagicAssistant::showRestTime()
