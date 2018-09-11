@@ -17,6 +17,7 @@ class TeamScore : public QObject
     Q_PROPERTY(quint16 homeScore READ getHomeScore)
     Q_PROPERTY(quint16 awayScore READ getAwayScore)
     Q_PROPERTY(QString state READ getState)
+    Q_PROPERTY(bool isFocusedTeam READ isFocusedTeam)
 
 public:
     TeamScore(QObject *parent = 0) : QObject(parent) {}
@@ -25,6 +26,7 @@ public:
     quint16 getHomeScore() const {return _homeScore;}
     quint16 getAwayScore() const {return _awayScore;}
     QString getState() const {return _state;}
+    bool isFocusedTeam() const {return _isFocusedTeam;}
 
 public:
     QString _homeTeam;
@@ -32,6 +34,7 @@ public:
     quint16 _homeScore;
     quint16 _awayScore;
 	QString _state;
+    bool _isFocusedTeam;
 };
 
 class NBAAssistant : public QObject

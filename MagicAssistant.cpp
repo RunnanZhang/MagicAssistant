@@ -25,7 +25,6 @@
 
 #include <QQuickView>
 #include <QQuickWidget>
-#include <QQmlEngine>
 #include <QQmlContext>
 
 #include <windows.h>
@@ -550,46 +549,33 @@ void MagicAssistant::shutdown()
 
 void MagicAssistant::showTodayScore()
 {
-//    NBAAssistant nbaobj;
-//    QList<TeamScore*> list = nbaobj.getTodayScore();
-//    QList<QObject*> objList;
-//    for(auto i : list) objList << i;
+    NBAAssistant nbaobj;
+    QList<TeamScore*> list = nbaobj.getTodayScore();
+    QStringList filterList;
+    filterList << "骑士" << "湖人" << "勇士" << "火箭" << "凯尔特人";
 
-//    QQuickWidget *view = new QQuickWidget;
-//    QQmlContext *ctxt = view->rootContext();
-//    ctxt->setContextProperty("nbaobj", QVariant::fromValue(objList));
-//    view->setSource(QUrl("qrc:/ScoreBoard.qml"));
-//    view->show();
+    // 只有QObjec才能注册属性成功.
+    QList<QObject*> objList;
+    for(auto i : list)
+    {
+        if(filterList.contains(i->_awayTeam) || filterList.contains(i->_homeTeam))
+        {
+            i->_isFocusedTeam = true;
+        }
+        objList << i;
+    }
 
-    QWidget * www = new QWidget;
-    www->show();
-    return;
-//    NBAAssistant nba;
-//    nba.getTodayScore();
-//    QList<TeamScore*> list = nba.getTeamscore();
+    QQuickWidget *view = new QQuickWidget;
+    QQmlContext *ctxt = view->rootContext();
+    ctxt->setContextProperty("nbaobj", QVariant::fromValue(objList));
+    view->setSource(QUrl("qrc:/ScoreBoard.qml"));
+    view->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
-//    _board->clear();
-//    QStringList filterList;
-//    filterList << "骑士" << "湖人" << "勇士" << "火箭" << "凯尔特人";
-//    _board->setFilterText(filterList, Qt::red);
-
-//    for (auto i = list.begin(); i != list.end(); ++i)
-//    {
-//        QString str = (*i)->_homeTeam + QChar::Space;
-//        str += QString::number((*i)->_homeScore);
-//        str += " : ";
-//        str += QString::number((*i)->_awayScore) + QChar::Space;
-//        str += (*i)->_awayTeam;
-//		str += " ";
-//		str += (*i)->_state;
-
-//        _board->append(str);
-//    }
-
-//    QDesktopWidget *desk = QApplication::desktop();
-//    _board->show();
-//    QRect rect = desk->availableGeometry();
-//    _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
+    _board->setShowWidget(view);
+    QDesktopWidget *desk = QApplication::desktop();
+    _board->show();
+    QRect rect = desk->availableGeometry();
+    _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
 }
 
 void MagicAssistant::showRestTime()
@@ -617,7 +603,7 @@ void MagicAssistant::showRestTime()
     QRect rect = desk->availableGeometry();
     _board->move(rect.width() - _board->width() - 32, rect.height() - _board->height());
 
-    _board->append(tr("Minute: %1").arg(minute));
-    _board->append(tr("Second: %1").arg(second));
+//    _board->append(tr("Minute: %1").arg(minute));
+//    _board->append(tr("Second: %1").arg(second));
 }
 

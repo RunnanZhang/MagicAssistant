@@ -15,14 +15,11 @@ public:
     explicit InfoBoard(QWidget *parent = 0);
     ~InfoBoard();
 
-    void append(const QString &text);
-
-    void setFilterText(const QStringList &filter, const QColor &color);
+    void setShowWidget(QWidget *w);
 
     void clear();
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
 private slots:
@@ -31,11 +28,7 @@ private slots:
 private:
     Ui::InfoBoard *ui;
 
-    QStringList _filterList;
-
-    QColor _color;
-
-    QString _html;
+    QWidget *_w;
 };
 
 #endif // INFOBOARD_H

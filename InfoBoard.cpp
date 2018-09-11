@@ -4,11 +4,13 @@
 #include <QDesktopServices>
 #include <QPoint>
 #include <QCursor>
+#include <QUrl>
 #include <windows.h>
 
 InfoBoard::InfoBoard(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::InfoBoard)
+    ui(new Ui::InfoBoard),
+    _w(Q_NULLPTR)
 {
     ui->setupUi(this);
 
@@ -16,10 +18,6 @@ InfoBoard::InfoBoard(QWidget *parent) :
 
     connect(ui->closeBtn, &QToolButton::clicked, this, &QWidget::close);
     connect(ui->closeBtn2, &QToolButton::clicked, this, &QWidget::close);
-
-    ui->textEdit->installEventFilter(this);
-
-    _html = ui->textEdit->toHtml();
 }
 
 InfoBoard::~InfoBoard()
@@ -27,43 +25,24 @@ InfoBoard::~InfoBoard()
     delete ui;
 }
 
-void InfoBoard::append(const QString &text)
+void InfoBoard::setShowWidget(QWidget *w)
 {
-    ui->textEdit->setTextColor(Qt::black);
+    if(w == _w) return;
 
-    for(auto str : _filterList)
+    if(_w != Q_NULLPTR)
     {
-        if(text.contains(str))
-        {
-            ui->textEdit->setTextColor(_color);
-            break;
-        }
+        delete _w;
     }
 
-    ui->textEdit->append(text);
+    _w = w;
+    ui->widgetLayout->addWidget(w);
 }
 
 void InfoBoard::clear()
 {
-    ui->textEdit->clear();
-    ui->textEdit->setHtml(_html);
-    _filterList.clear();
-}
-
-bool InfoBoard::eventFilter(QObject *obj, QEvent *event)
-{
-    if(event->type() == QEvent::Enter)
-    {
-        ui->textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    }
-    else if(event->type() == QEvent::Leave)
-    {
-        ui->textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    }
-
-    return QWidget::eventFilter(obj, event);
+//    ui->textEdit->clear();
+//    ui->textEdit->setHtml(_html);
+//    _filterList.clear();
 }
 
 bool InfoBoard::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -92,10 +71,4 @@ void InfoBoard::on_okBtn_clicked()
 {
     QString link = "http://nba.hupu.com";
     QDesktopServices::openUrl(QUrl(link));
-}
-
-void InfoBoard::setFilterText(const QStringList &filter, const QColor &color)
-{
-    _filterList = filter;
-    _color = color;
 }

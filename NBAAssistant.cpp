@@ -112,7 +112,7 @@ void NBAAssistant::analyzeCode(QString source)
 		state.replace("</p>", "");
 		state.remove(QChar::LineFeed);
 		data->_state = state;
-
+        data->_isFocusedTeam = false;
         _TeamScore << data;
 
         //查找下一组.
