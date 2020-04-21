@@ -4,14 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network quick xml widgets quickwidgets
+QT += core gui network quick xml widgets quickwidgets
 
 TARGET = MagicAssistant
 TEMPLATE = app
 
-CONFIG += c++11
+CONFIG += c++11 lrelease embed_translations
 
-LIBS += User32.lib
+#LIBS += User32.lib
 
 SOURCES += main.cpp\
     Settings.cpp \
@@ -22,7 +22,7 @@ SOURCES += main.cpp\
     ToolButton.cpp \
     InfoBoard.cpp
 
-HEADERS  += \
+HEADERS += \
     defines.h \
     Settings.h \
     LogHandler.h \
@@ -33,7 +33,7 @@ HEADERS  += \
     ToolButton.h \
     InfoBoard.h
 
-FORMS    += \
+FORMS += \
     ToolBar.ui \
     MagicAssistant.ui \
     InfoBoard.ui
@@ -44,4 +44,6 @@ RESOURCES += \
 macx: ICON = images/app.icns
 win32: RC_ICONS = images/james_16.ico
 
-TRANSLATIONS = MagicAssistant_zh_CN.ts
+QM_FILES_RESOURCE_PREFIX = /translate
+TRANSLATIONS += MagicAssistant_zh_CN.ts \
+                MagicAssistant_en_US.ts

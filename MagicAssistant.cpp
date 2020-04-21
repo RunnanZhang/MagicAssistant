@@ -126,9 +126,10 @@ void MagicAssistant::checkUpdate()
 
         Settings setLocale("./version.xml");
         QString versionLocale = setLocale.value("version").toString();
+        qInfo() << "server version: " << version << ", locale version: " << versionLocale;
 
         // 版本号不同，则提示更新.
-        if(version != versionLocale)
+        if(version != versionLocale && QFile::exists("./Updater.exe"))
         {
             QString updateInfo = set.value("updateInfo").toString();
             QStringList argList;
