@@ -9,7 +9,7 @@ QT += core gui network quick xml widgets quickwidgets
 TARGET = MagicAssistant
 TEMPLATE = app
 
-CONFIG += c++11 lrelease embed_translations
+CONFIG += c++11 lrelease embed_translations no_import_scan
 
 #LIBS += User32.lib
 
